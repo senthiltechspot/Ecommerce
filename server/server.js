@@ -33,6 +33,11 @@ db.sequelize.sync({ force: false })
 //     id:2,
 //     name:"admin"
 // })
+app.get("/", (req, res) => {
+    res.json({
+      message: "Welcome to Ecommerce App",
+    });
+  });
 
 require("./Routes/auth.routes")(app);
 
