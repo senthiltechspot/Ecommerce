@@ -1,0 +1,13 @@
+const CategoryController = require("../Controllers/category.controller");
+const authJWt = require("../MiddleWare/authJWt");
+module.exports = (app) => {
+  // Create a Category
+  app.post(
+    "/ecomm/api/v1/category",
+    [authJWt.isAuthenticated],
+    CategoryController.CreateCategory
+  );
+
+  // Get All Category
+  app.get("/ecomm/api/v1/category", CategoryController.GetAllCategory);
+};

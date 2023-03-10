@@ -23,13 +23,14 @@ app.use(cookieParser());
 // define a simple route
 app.get("/", (req, res) => {
   res.json({
-    message: "Welcome to Login Application using Node.js and MongoDB",
+    message: "Welcome to Ecommerce Application using Node.js and MongoDB",
   });
 });
 
 // Required routes
 require("./Routes/auth.routes.js")(app);
-
+require("./Routes/category.routes")(app);
+require("./Routes/product.routes")(app);
 
 // listen for requests
 app.listen(process.env.PORT || 3500, () => {
