@@ -1,104 +1,110 @@
 const Cart = require("../Models/cart.model");
+const Product = require("../Models/product.model");
 
 // Add an item to the cart
 exports.AddtoCart = async (req, res) => {
+  const { productId, quantity } = req.body;
+
   try {
-    const { productId, quantity } = req.body;
+    // Find the product in the database
+    const product = await Product.findById(productId);
 
-    const cart = await Cart.findOne({ user: req.user._id });
-
-    if (cart) {
-      // If cart already exists, update item quantity
-      const itemIndex = cart.items.findIndex((p) => p.productId == productId);
-
-      if (itemIndex !== -1) {
-        cart.items[itemIndex].quantity += quantity;
-      } else {
-        cart.items.push({ productId, quantity });
-      }
-
-      cart.totalItems = cart.items.reduce((a, c) => a + c.quantity, 0);
-      cart.totalPrice = cart.items.reduce(
-        (a, c) => a + c.quantity * c.product.price,
-        0
-      );
-
-      const updatedCart = await cart.save();
-      res.send(updatedCart);
-    } else {
-      // If cart doesn't exist, create a new cart
-      const newCart = await Cart.create({
-        user: req.user._id,
-        items: [{ productId, quantity }],
-        totalPrice: quantity * req.product.price,
-        totalItems: quantity,
-      });
-
-      res.send(newCart);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
     }
+
+    // Calculate the total price of the item
+    const totalPrice = product.price * quantity;
+
+    // Find the user's cart in the database, or create a new one if it doesn't exist
+    let cart = await Cart.findOne({ user: req.user._id });
+
+    if (!cart) {
+      cart = new Cart({
+        user: req.user._id,
+        items: [],
+      });
+    }
+
+    // Check if the item already exists in the cart
+    const existingItem = cart.items.find(
+      (item) => item.productId.toString() === productId
+    );
+
+    console.log(existingItem);
+    if (existingItem) {
+      // Update the quantity and total price of the existing item
+      existingItem.quantity += quantity;
+      existingItem.totalPrice += totalPrice;
+    } else {
+      // Add a new item to the cart
+      cart.items.push({
+        productId: productId,
+        quantity: quantity,
+      });
+    }
+    (cart.totalItems += quantity), (cart.totalPrice += totalPrice);
+
+    // Save the updated cart to the database
+    await cart.save();
+
+    return res.status(201).json({ message: "Item added to cart", cart });
   } catch (error) {
-    res.status(500).send({ message: "Internal server error", error });
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
 // Remove an item from the cart
 exports.RemoveFromCart = async (req, res) => {
+  const itemId = req.params.itemId;
+
   try {
+    // Find the user's cart in the database
     const cart = await Cart.findOne({ user: req.user._id });
 
-    if (cart) {
-      cart.items = cart.items.filter(
-        (item) => item._id.toString() !== req.params.id.toString()
-      );
-
-      cart.totalItems = cart.items.reduce((a, c) => a + c.quantity, 0);
-      cart.totalPrice = cart.items.reduce(
-        (a, c) => a + c.quantity * c.product.price,
-        0
-      );
-
-      const updatedCart = await cart.save();
-      res.send(updatedCart);
-    } else {
-      res.status(404).send({ message: "Cart not found" });
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
     }
-  } catch (error) {
-    res.status(500).send({ message: "Internal server error", error });
-  }
-};
 
-// Update item quantity in the cart
-exports.UpdateCart = async (req, res) => {
-  try {
-    const cart = await Cart.findOne({ user: req.user._id });
+    // Find the item in the cart by ID
+    const itemIndex = cart.items.findIndex(
+      (item) => item._id.toString() === itemId.toString()
+    );
 
-    if (cart) {
-      const itemIndex = cart.items.findIndex(
-        (p) => p._id.toString() === req.params.id.toString()
-      );
-
-      if (itemIndex !== -1) {
-        cart.items[itemIndex].quantity = req.body.quantity;
-      }
-
-      cart.totalItems = cart.items.reduce((a, c) => a + c.quantity, 0);
-      cart.totalPrice = cart.items.reduce(
-        (a, c) => a + c.quantity * c.product.price,
-        0
-      );
-
-      const updatedCart = await cart.save();
-      res.send(updatedCart);
-    } else {
-      res.status(404).send({ message: "Cart not found" });
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: "Item not found in cart" });
     }
+
+    console.log(itemIndex);
+
+    // Find the product in the database
+    const product = await Product.findById(cart.items[itemIndex].productId);
+
+    console.log(product);
+
+    // Calculate the total price of the item
+    const itemPrice = product.price * cart.items[itemIndex].quantity;
+
+    // Update the total price and quantity of the cart
+    cart.totalPrice -= itemPrice;
+    cart.totalItems -= cart.items[itemIndex].quantity;
+
+    // Remove the item from the cart
+    cart.items.splice(itemIndex, 1);
+
+    // Save the updated cart to the database
+    await cart.save();
+
+    return res.status(200).json({ message: "Item removed from cart", cart });
   } catch (error) {
-    res.status(500).send({ message: "Internal server error", error });
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
 // Get all cart items for the authenticated user
-exports.GetAllCart = async (req, res) => {
+exports.GetAllProductsFromCart = async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.user._id }).populate(
       "items.productId",
@@ -106,7 +112,7 @@ exports.GetAllCart = async (req, res) => {
     );
 
     if (cart) {
-      res.send(cart.items);
+      res.send(cart);
     } else {
       res.status(404).send({ message: "Cart not found" });
     }
@@ -114,4 +120,3 @@ exports.GetAllCart = async (req, res) => {
     res.status(500).send({ message: "Internal server error", error });
   }
 };
-

@@ -10,4 +10,11 @@ module.exports = (app) => {
 
   // Get All Category
   app.get("/ecomm/api/v1/category", CategoryController.GetAllCategory);
+
+  // Delete Category By Id
+  app.delete(
+    "/ecomm/api/v1/category/:id",
+    [authJWt.isAuthenticated],
+    CategoryController.DeleteCategoryById
+  );
 };

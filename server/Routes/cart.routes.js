@@ -1,12 +1,25 @@
 const CartController = require("../Controllers/cart.controller");
+const authJWt = require("../MiddleWare/authJWt");
+
 module.exports = (app) => {
-  // Create a Category
-  app.post("/ecomm/api/v1/cart/add", CartController.AddtoCart);
+  // Add item to Cart
+  app.post(
+    "/ecomm/api/v1/cart/add",
+    [authJWt.isAuthenticated],
+    CartController.AddtoCart
+  );
 
-  // Get All Category
-  app.delete("/ecomm/api/v1/cart/remove/:id", CartController.RemoveFromCart);
+  // Remove Items from cart
+  app.delete(
+    "/ecomm/api/v1/cart/items/:itemId",
+    [authJWt.isAuthenticated],
+    CartController.RemoveFromCart
+  );
 
-  app.put("/ecomm/api/v1/cart/update/:id", CartController.UpdateCart);
-
-  app.get("/ecomm/api/v1/cart/items", CartController.GetAllCart);
+  // Get All items from Cart
+  app.get(
+    "/ecomm/api/v1/cart/items",
+    [authJWt.isAuthenticated],
+    CartController.GetAllProductsFromCart
+  );
 };

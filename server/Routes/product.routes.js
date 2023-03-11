@@ -1,8 +1,13 @@
 const ProductController = require("../Controllers/products.controller");
+const authJWt = require("../MiddleWare/authJWt");
 
 module.exports = (app) => {
   // Create a Products
-  app.post("/ecomm/api/v1/products", ProductController.CreateProduct);
+  app.post(
+    "/ecomm/api/v1/products",
+    [authJWt.isAuthenticated],
+    ProductController.CreateProduct
+  );
 
   // Get All Products
   app.get("/ecomm/api/v1/products", ProductController.GetAllProducts);
@@ -11,8 +16,16 @@ module.exports = (app) => {
   app.get("/ecomm/api/v1/products/:id", ProductController.GetProductById);
 
   //  Update Products by id
-  app.put("/ecomm/api/v1/products/:id", ProductController.UpdateProductById);
+  app.put(
+    "/ecomm/api/v1/products/:id",
+    [authJWt.isAuthenticated],
+    ProductController.UpdateProductById
+  );
 
   //  Delete Products
-  app.delete("/ecomm/api/v1/products/:id", ProductController.DeleteProductById);
+  app.delete(
+    "/ecomm/api/v1/products/:id",
+    [authJWt.isAuthenticated],
+    ProductController.DeleteProductById
+  );
 };

@@ -64,18 +64,22 @@ exports.UpdateProductById = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // // Check if the category exists
-    // const existingCategory = await Category.findById(category);
-    // if (!existingCategory) {
-    //   return res.status(400).json({ message: "Invalid category" });
-    // }
-
     // Update the product data
-    existingProduct.name = name;
-    existingProduct.description = description;
-    existingProduct.price = price;
-    existingProduct.category = category;
-    existingProduct.imageUrl = imageUrl;
+    if (name) {
+      existingProduct.name = name;
+    }
+    if (description) {
+      existingProduct.description = description;
+    }
+    if (price) {
+      existingProduct.price = price;
+    }
+    if (category) {
+      existingProduct.category = category;
+    }
+    if (imageUrl) {
+      existingProduct.imageUrl = imageUrl;
+    }
 
     // Save the updated product to the database
     const updatedProduct = await existingProduct.save();

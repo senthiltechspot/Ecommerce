@@ -4,16 +4,18 @@ const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 
 exports.register = async (req, res) => {
-  let { username, email, password } = req.body;
-  console.log(username, email, password);
+  let { name, username, email, password, isAdmin } = req.body;
+  console.log(name, username, email, password, isAdmin);
   try {
     // Create a new user
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
+      name: name,
       username: username,
       email: email,
       password: hashedPassword,
+      isAdmin: isAdmin,
     });
     // Save user in the database
     const saveddata = await user.save();
