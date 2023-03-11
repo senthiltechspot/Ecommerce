@@ -32,6 +32,8 @@ require("./Routes/auth.routes.js")(app);
 require("./Routes/category.routes")(app);
 require("./Routes/product.routes")(app);
 require("./Routes/cart.routes")(app);
+require("./Routes/order.routes")(app);
+
 
 // listen for requests
 app.listen(process.env.PORT || 3500, () => {
