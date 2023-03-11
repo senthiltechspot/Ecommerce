@@ -5,7 +5,7 @@ module.exports = (app) => {
   // Create a Products
   app.post(
     "/ecomm/api/v1/products",
-    [authJWt.isAuthenticated],
+    [authJWt.isAuthenticatedAdmin],
     ProductController.CreateProduct
   );
 
@@ -18,7 +18,7 @@ module.exports = (app) => {
   //  Update Products by id
   app.put(
     "/ecomm/api/v1/products/:id",
-    [authJWt.isAuthenticated],
+    [authJWt.isAuthenticatedAdmin],
     ProductController.UpdateProductById
   );
 

@@ -4,7 +4,7 @@ module.exports = (app) => {
   // Create a Category
   app.post(
     "/ecomm/api/v1/category",
-    [authJWt.isAuthenticated],
+    [authJWt.isAuthenticatedAdmin],
     CategoryController.CreateCategory
   );
 
@@ -14,7 +14,7 @@ module.exports = (app) => {
   // Delete Category By Id
   app.delete(
     "/ecomm/api/v1/category/:id",
-    [authJWt.isAuthenticated],
+    [authJWt.isAuthenticatedAdmin],
     CategoryController.DeleteCategoryById
   );
 };
