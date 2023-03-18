@@ -1,0 +1,11 @@
+.Heading{
+    padding-top: 20px;
+    padding-bottom: 20px;
+
+    font-weight: bold;
+}
+.CardsCollection{
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-bottom: 50px;
+}
