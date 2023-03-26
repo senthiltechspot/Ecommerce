@@ -25,7 +25,7 @@ module.exports = (app) => {
   //  Delete Products
   app.delete(
     "/ecomm/api/v1/products/:id",
-    [authJWt.isAuthenticated],
+    [authJWt.isAuthenticatedAdmin],
     ProductController.DeleteProductById
   );
 };
