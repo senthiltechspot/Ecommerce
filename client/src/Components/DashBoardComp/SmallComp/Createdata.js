@@ -5,7 +5,8 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, Snackbar, Alert } from "@mui/material";
+
 const cookies = new Cookies();
 const token = cookies.get("accessToken");
 
@@ -16,7 +17,18 @@ const Createdata = ({ url, categoryurl }) => {
   const [imageUrl, setImageUrl] = useState(null);
   const [Category, setCategory] = useState(null);
   const [data, setData] = React.useState([]);
+  const [openSnackBar, setOpenSnackBar] = React.useState(false);
 
+  const handleSucess = () => {
+    setOpenSnackBar(true);
+  };
+
+  const handleClosesnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
   React.useEffect(() => {
     axios
       .get(categoryurl)
@@ -58,9 +70,8 @@ const Createdata = ({ url, categoryurl }) => {
         // handleClick();
         // handleSucess();
         // handleflipLogin();
-        useEffect(() => {
-          console.log(result);
-        }, [result]);
+       
+        handleSucess()
       })
       .catch((error) => {
         // handleClickError();
@@ -76,11 +87,14 @@ const Createdata = ({ url, categoryurl }) => {
           label="Name"
           id="fullWidth"
           onChange={(e) => setname(e.target.value)}
+          inputProps={{ maxLength: 45 }}
         />
         <TextField
           fullWidth
           label="Description"
           id="fullWidth"
+          multiline
+          maxRows={20}
           onChange={(e) => setDescription(e.target.value)}
         />
         <TextField
@@ -114,12 +128,25 @@ const Createdata = ({ url, categoryurl }) => {
             ) : (
               <MenuItem value={"Others"}>Others</MenuItem>
             )}
-            <MenuItem value={"Electronics"}>Electronics</MenuItem>
           </Select>
         </FormControl>
         <Button variant="outlined" onClick={() => handleCreate()}>
           Create
         </Button>
+
+        <Snackbar
+          open={openSnackBar}
+          autoHideDuration={6000}
+          onClose={handleClosesnackbar}
+        >
+          <Alert
+            onClose={handleClosesnackbar}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Product Sucessfully Created
+          </Alert>
+        </Snackbar>
       </form>
     </div>
   );

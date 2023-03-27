@@ -58,7 +58,7 @@ export default function InteractiveList({ Url, from }) {
       .catch((error) => {
         console.log(error);
       });
-  }, [data]);
+  }, []);
 
   // if (data) {
   //   console.log(data);

@@ -108,27 +108,28 @@ const NavBar = () => {
   };
 
   // Handle Cart Get Request
-  const GetCartConfiguration = {
-    method: "get",
-    url: "http://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/cart/items",
-    headers: {
+  useEffect(() => {
+    const headers = {
       Authorization: token,
       "Content-Type": "application/json",
-    },
-  };
+    };
 
-  React.useEffect(() => {
-    axios(GetCartConfiguration)
+    axios
+      .get(
+        "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/cart/items",
+        {
+          headers: headers,
+        }
+      )
       .then((response) => {
         setTotalCartItems(response.data);
-        console.log(response.data)
+        console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, [totalCartItems]);
+  }, []);
 
-  
   return (
     <div className="NavBar">
       {/* title */}
@@ -139,7 +140,11 @@ const NavBar = () => {
       >
         {/* Menu List */}
         <div className="NavLink">
-          <Button variant="text" style={{ color: "Black" }}>
+          <Button
+            variant="text"
+            style={{ color: "Black" }}
+            onClick={() => navigate("/")}
+          >
             Home
           </Button>
           <Button
@@ -162,22 +167,30 @@ const NavBar = () => {
               "aria-labelledby": "basic-button",
             }}
           >
-            <MenuItem onClick={handleClose2}>Electronics</MenuItem>
-            <MenuItem onClick={handleClose2}>Furnitures</MenuItem>
-            <MenuItem onClick={handleClose2}>Accessories</MenuItem>
+            <MenuItem onClick={() => navigate("/Category/Electronics")}>
+              Electronics
+            </MenuItem>
+            <MenuItem onClick={() => navigate("/Category/Furniture")}>
+              Furnitures
+            </MenuItem>
+            <MenuItem onClick={() => navigate("/Category/Mobiles")}>
+              Mobiles
+            </MenuItem>
           </Menu>
-          <Button variant="text" style={{ color: "Black" }}>
+          <Button
+            variant="text"
+            style={{ color: "Black" }}
+            onClick={() => navigate("/about-us")}
+          >
             Contact
           </Button>
         </div>
 
         {/* Cart Button */}
         <div>
-          <Button variant="text" color="warning">
+          <Button variant="text" color="warning" onClick={() => navigate("/Cart")}>
             <Badge
-              badgeContent={
-                totalCartItems ? totalCartItems.items.length : 0
-              }
+              badgeContent={totalCartItems ? totalCartItems.totalItems : 0}
               color="secondary"
             >
               <ShoppingCartIcon fontSize="small" />

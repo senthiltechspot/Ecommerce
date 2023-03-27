@@ -17,6 +17,7 @@ const AdminCategory = () => {
     "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/category/";
 
   // Handle Create Request
+  useEffect(() => {});
   const configuration = {
     method: "post",
     url: categoryurl,
@@ -29,15 +30,9 @@ const AdminCategory = () => {
     },
   };
   const handleCreate = (e) => {
-    // e.preventDefault();
     axios(configuration)
       .then((result) => {
-        // handleClick();
         // handleSucess();
-        // handleflipLogin();
-        useEffect(() => {
-          console.log(result);
-        }, [result]);
       })
       .catch((error) => {
         // handleClickError();

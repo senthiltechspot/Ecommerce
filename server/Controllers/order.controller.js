@@ -32,7 +32,7 @@ exports.CreateOrder = async (req, res) => {
     const order = new Order({
       products: orderItems,
       user: req.user._id,
-      shippingAddress,
+      shipping: shippingAddress,
       paymentMethod,
       totalAmount: totalPrice,
     });
