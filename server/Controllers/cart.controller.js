@@ -48,7 +48,7 @@ exports.AddtoCart = async (req, res) => {
     // Save the updated cart to the database
     await cart.save();
 
-    return res.status(201).json({ message: "Item added to cart", cart });
+    res.status(201).json({ message: "Item added to cart", cart });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error" });
@@ -96,7 +96,7 @@ exports.RemoveFromCart = async (req, res) => {
     // Save the updated cart to the database
     await cart.save();
 
-    return res.status(200).json({ message: "Item removed from cart", cart });
+    res.status(200).json({ message: "Item removed from cart", cart });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error" });
