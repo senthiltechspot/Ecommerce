@@ -128,7 +128,8 @@ exports.DeleteCart = async (req, res) => {
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
-    await cart.remove();
+    console.log(cart)
+    await cart.deleteOne({ _id: cart._id });
     return res.status(200).json({ message: "Cart deleted successfully" });
   } catch (err) {
     console.error(err);
