@@ -22,4 +22,11 @@ module.exports = (app) => {
     [authJWt.isAuthenticated],
     CartController.RemoveFromCart
   );
+
+  // Remove Items from cart
+  app.delete(
+    "/ecomm/api/v1/cart",
+    [authJWt.isAuthenticated],
+    CartController.DeleteCart
+  );
 };
