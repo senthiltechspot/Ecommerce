@@ -135,7 +135,7 @@ const Orders = () => {
     };
     axios
       .get(
-        "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/MyOrders",
+        "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/myOrders",
         { headers }
       )
       .then((response) => {
