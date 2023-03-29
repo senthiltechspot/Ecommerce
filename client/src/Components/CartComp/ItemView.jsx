@@ -20,9 +20,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { Typography } from "@mui/material";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+
 const cookies = new Cookies();
 
 const ItemView = () => {
+  const navigate = useNavigate();
+
   const token = cookies.get("accessToken");
 
   const url =
@@ -37,6 +42,26 @@ const ItemView = () => {
   const [zip, setZip] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [orderItems, setorderitems] = useState(null);
+  const [openSnackBar, setOpenSnackBar] = React.useState(false);
+  const [openError, setOpenError] = React.useState(false);
+
+  const handleSucess = () => {
+    setOpenSnackBar(true);
+    setUpdate(true);
+  };
+
+  const handleClickError = () => {
+    setOpenError(true);
+    setUpdate(true);
+  };
+
+  const handleClosesnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+    setUpdate(false);
+  };
 
   useEffect(() => {
     const headers = {
@@ -63,11 +88,11 @@ const ItemView = () => {
     axios(configuration)
       .then((res) => {
         setUpdate(true);
-        // handleSucess();
+        handleSucess();
       })
       .catch((error) => {
         console.log(error);
-        // handleClickError();
+        handleClickError();
       });
   };
   const HandlePlaceOrder = () => {
@@ -96,13 +121,15 @@ const ItemView = () => {
       };
 
       axios(configuration)
-        .then((res) => {
+        .then(async (res) => {
+          handleSucess();
+          await handleDeleteCart();
           setUpdate(true);
-          // handleSucess();
+          navigate("/checkout");
         })
         .catch((error) => {
           console.log(error);
-          // handleClickError();
+          handleClickError();
         });
     } else {
       console.log("Empty Cart");
@@ -126,9 +153,30 @@ const ItemView = () => {
       price: item.productId.price,
     }));
     setorderitems(AllItems);
-    console.log("fetchedOrderitems", AllItems);
+    // console.log("fetchedOrderitems", AllItems);
   }
 
+  // /ecomm/api/v1/cart
+  const handleDeleteCart = () => {
+    const configuration = {
+      method: "delete",
+      url: `https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/cart/`,
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+    };
+
+    axios(configuration)
+      .then((res) => {
+        setUpdate(true);
+        handleSucess();
+      })
+      .catch((error) => {
+        console.log(error);
+        handleClickError();
+      });
+  };
   return (
     <div>
       <div className="container-fluid d-flex flex-column gap-3 mt-3">
@@ -274,6 +322,33 @@ const ItemView = () => {
           </div>
         </div>
       </div>
+      {/* Alert Notification Bar */}
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={6000}
+        onClose={handleClosesnackbar}
+      >
+        <Alert
+          onClose={handleClosesnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Completed Sucessfully
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={openError}
+        autoHideDuration={6000}
+        onClose={handleClosesnackbar}
+      >
+        <Alert
+          onClose={handleClosesnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Something Went Wrong Try Again
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

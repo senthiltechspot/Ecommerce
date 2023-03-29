@@ -5,12 +5,12 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { Button, TextField, Snackbar, Alert } from "@mui/material";
+import { Button, TextField, Snackbar, Alert, Typography } from "@mui/material";
 
 const cookies = new Cookies();
 const token = cookies.get("accessToken");
 
-const Createdata = ({ url, categoryurl }) => {
+const Createdata = ({ url, categoryurl, setisupdate }) => {
   const [name, setname] = useState(null);
   const [description, setDescription] = useState(null);
   const [price, setPrice] = useState(null);
@@ -21,6 +21,7 @@ const Createdata = ({ url, categoryurl }) => {
 
   const handleSucess = () => {
     setOpenSnackBar(true);
+    setisupdate(true);
   };
 
   const handleClosesnackbar = (event, reason) => {
@@ -28,6 +29,7 @@ const Createdata = ({ url, categoryurl }) => {
       return;
     }
     setOpenSnackBar(false);
+    setisupdate(false);
   };
   React.useEffect(() => {
     axios
@@ -59,10 +61,6 @@ const Createdata = ({ url, categoryurl }) => {
     },
   };
 
-  if (data) {
-    console.log(data);
-  }
-
   const handleCreate = (e) => {
     // e.preventDefault();
     axios(configuration)
@@ -70,8 +68,8 @@ const Createdata = ({ url, categoryurl }) => {
         // handleClick();
         // handleSucess();
         // handleflipLogin();
-       
-        handleSucess()
+
+        handleSucess();
       })
       .catch((error) => {
         // handleClickError();
@@ -80,7 +78,9 @@ const Createdata = ({ url, categoryurl }) => {
   };
   return (
     <div>
-      <div>Create Category</div>
+      <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
+        Create Product
+      </Typography>
       <form className="d-flex flex-column gap-3">
         <TextField
           fullWidth

@@ -6,16 +6,38 @@ import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
 import Button from "@mui/material/Button";
 import { useNavigate, useParams } from "react-router-dom";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import axios from "axios";
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
 
-const CardItems = () => {
+const CardItems = ({ isUpdated, setIsUpdated }) => {
   const [productId, setProductId] = useState("");
+  const [openSnackBar, setOpenSnackBar] = React.useState(false);
+  const [openError, setOpenError] = React.useState(false);
 
   const params = useParams();
   const navigate = useNavigate();
+
+  const handleSucess = () => {
+    setOpenSnackBar(true);
+    setIsUpdated(true);
+  };
+
+  const handleError = () => {
+    setOpenError(true);
+    setIsUpdated(true);
+  };
+  const handleClosesnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenError(false);
+    setOpenSnackBar(false);
+    setIsUpdated(false);
+  };
 
   const url =
     "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/products";
@@ -49,11 +71,10 @@ const CardItems = () => {
     setProductId(id);
     axios(configuration)
       .then((result) => {
-        // handleClick();
-        // handleSucess();
-        // handleflipLogin();
+        handleSucess();
       })
       .catch((error) => {
+        handleError();
         console.log(error);
       });
   };
@@ -88,7 +109,7 @@ const CardItems = () => {
                         {items.name}
                       </Typography>
                       {/* <Button variant="contained">View</Button> */}
-                      <p className="card-text">
+                      <p className="card-text d-flex gap-2 justify-content-center">
                         ₹{items.price}{" "}
                         <a className="text-decoration-line-through">
                           ₹{Math.floor((items.price / 100) * 20) + items.price}{" "}
@@ -97,21 +118,50 @@ const CardItems = () => {
                           20% Off
                         </a>
                       </p>
-                      <Button
-                        className="btn btn-primary"
-                        onClick={() => AddToCart(items._id)}
-                      >
-                        Add to Cart
-                      </Button>
-                      <a href="#" className="btn btn-warning">
-                        Buy Now
-                      </a>
+                      <div className="d-flex gap-3">
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => AddToCart(items._id)}
+                        >
+                          Add to Cart
+                        </button>
+                        <button href="#" className="btn btn-warning">
+                          Buy Now
+                        </button>
+                      </div>
                     </CardContent>
                   </CardActionArea>
                 </Card>
               ))
           : "No Products Found"}
       </div>
+      {/* Alert Notification Bar */}
+      <Snackbar
+        open={openError}
+        autoHideDuration={6000}
+        onClose={handleClosesnackbar}
+      >
+        <Alert
+          onClose={handleClosesnackbar}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          Cart Add Failed Kindly Retry
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={6000}
+        onClose={handleClosesnackbar}
+      >
+        <Alert
+          onClose={handleClosesnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Sucessfully Added to Cart
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

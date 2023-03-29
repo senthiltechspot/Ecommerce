@@ -19,7 +19,7 @@ import Login from "../Auth/Login";
 import Register from "../Auth/Register";
 import Cookies from "universal-cookie";
 import jwt_decode from "jwt-decode";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const cookies = new Cookies();
@@ -36,7 +36,7 @@ const style = {
   p: 4,
 };
 
-const NavBar = () => {
+const NavBar = ({ isUpdated }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const [isLoggedin, SetLoggedin] = useState(false);
@@ -128,7 +128,7 @@ const NavBar = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [isUpdated]);
 
   return (
     <div className="NavBar">
@@ -188,7 +188,11 @@ const NavBar = () => {
 
         {/* Cart Button */}
         <div>
-          <Button variant="text" color="warning" onClick={() => navigate("/Cart")}>
+          <Button
+            variant="text"
+            color="warning"
+            onClick={() => navigate("/Cart")}
+          >
             <Badge
               badgeContent={totalCartItems ? totalCartItems.totalItems : 0}
               color="secondary"
@@ -281,7 +285,7 @@ const NavBar = () => {
           {decodedToken != null ? decodedToken.user.name : "Your Name"}
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => navigate("/dashboard")}>
           <Avatar /> Account
         </MenuItem>
         <Divider />

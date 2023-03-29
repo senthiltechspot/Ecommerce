@@ -17,7 +17,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { Snackbar, Alert } from "@mui/material";
+import { Snackbar, Alert, Divider } from "@mui/material";
 const cookies = new Cookies();
 const token = cookies.get("accessToken");
 
@@ -25,7 +25,13 @@ const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
 }));
 
-export default function InteractiveList({ Url, from }) {
+export default function InteractiveList({
+  Url,
+  from,
+  searchProductname,
+  isupdate,
+  setisupdate,
+}) {
   const [dense, setDense] = React.useState(false);
   const [secondary, setSecondary] = React.useState(false);
   const [data, setData] = React.useState([]);
@@ -39,32 +45,32 @@ export default function InteractiveList({ Url, from }) {
 
   const handleSucess = () => {
     setOpenSnackBar(true);
+    setisupdate(true);
   };
 
   const handleClosesnackbar = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
-    setOpenError(false)
+    setOpenError(false);
     setOpenSnackBar(false);
+    setisupdate(false);
   };
 
   React.useEffect(() => {
+    const headers = {
+      Authorization: token,
+      "Content-Type": "application/json",
+    };
     axios
-      .get(Url)
+      .get(Url, { headers })
       .then((response) => {
         setData(response.data);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, []);
-
-  // if (data) {
-  //   console.log(data);
-  // }
-  // console.log(Url);
-  // console.log(token);
+  }, [isupdate]);
 
   // Handle Delete Request
   const [response, setResponse] = React.useState(null);
@@ -95,26 +101,53 @@ export default function InteractiveList({ Url, from }) {
         </Typography>
         <Demo>
           {data ? (
-            data.map((items) => (
-              <List dense={dense} key={items._id}>
-                <ListItem
-                  secondaryAction={
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={() => handleDelete(items._id)}
+            searchProductname ? (
+              data
+                .filter((item) => item.name.includes(searchProductname))
+                .map((items) => (
+                  <List dense={dense} key={items._id}>
+                    <ListItem
+                      secondaryAction={
+                        <IconButton
+                          edge="end"
+                          aria-label="delete"
+                          onClick={() => handleDelete(items._id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      }
                     >
-                      <DeleteIcon />
-                    </IconButton>
-                  }
-                >
-                  <ListItemText
-                    primary={items.name}
-                    secondary={secondary ? "Secondary text" : null}
-                  />
-                </ListItem>
-              </List>
-            ))
+                      <ListItemText
+                        primary={items.name}
+                        secondary={secondary ? "Secondary text" : null}
+                      />
+                    </ListItem>
+                    <Divider />
+                  </List>
+                ))
+            ) : (
+              data.map((items) => (
+                <List dense={dense} key={items._id}>
+                  <ListItem
+                    secondaryAction={
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() => handleDelete(items._id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemText
+                      primary={items.name}
+                      secondary={secondary ? "Secondary text" : null}
+                    />
+                  </ListItem>
+                  <Divider />
+                </List>
+              ))
+            )
           ) : (
             <List dense={dense}>
               <ListItem
