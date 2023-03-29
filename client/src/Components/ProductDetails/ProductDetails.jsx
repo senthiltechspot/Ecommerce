@@ -15,7 +15,7 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
   const navigate = useNavigate();
   const token = cookies.get("accessToken");
 
-  const url = `http://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/products/${params.id}`;
+  const url = `https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/products/${params.id}`;
 
   const [fetchedData, setFetchedData] = useState(null);
   const [openSnackBar, setOpenSnackBar] = React.useState(false);
@@ -46,10 +46,7 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
     };
     getData();
   }, [url]);
-  fetchedData
-    ? console.log("date fetched", fetchedData)
-    : console.log("object not fount");
-
+  
   // Handle Create Request
   const configuration = {
     method: "post",
