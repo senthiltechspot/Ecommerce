@@ -57,9 +57,8 @@ const Register = ({ handleflipLogin, handleSucess }) => {
     e.preventDefault();
     axios(configuration)
       .then((result) => {
-        handleClick();
-        handleSucess();
         handleflipLogin();
+        handleSucess();
       })
       .catch((error) => {
         handleClickError();
