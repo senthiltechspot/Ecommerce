@@ -1,26 +1,38 @@
 import React, { useEffect, useState } from "react";
-import "./NavBar.css";
-import Box from "@mui/material/Box";
-import Avatar from "@mui/material/Avatar";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import Logout from "@mui/icons-material/Logout";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import Badge from "@mui/material/Badge";
+import {
+  AppBar,
+  Grid,
+  Tabs,
+  Tab,
+  Toolbar,
+  Typography,
+  Box,
+  Divider,
+  Button,
+  useTheme,
+  useMediaQuery,
+  Menu,
+  MenuItem,
+  Snackbar,
+  Alert,
+  Badge,
+  Avatar,
+  Tooltip,
+  Modal,
+  IconButton,
+  ListItemIcon,
+} from "@mui/material";
+import DrawerComp from "./DrawerComp";
 import Login from "../Auth/Login";
 import Register from "../Auth/Register";
-import Cookies from "universal-cookie";
-import jwt_decode from "jwt-decode";
+
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
+import Cookies from "universal-cookie";
+import jwt_decode from "jwt-decode";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import Logout from "@mui/icons-material/Logout";
 
 const cookies = new Cookies();
 
@@ -37,17 +49,26 @@ const style = {
 };
 
 const NavBar = ({ isUpdated }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [anchorEl2, setAnchorEl2] = React.useState(null);
-  const [isLoggedin, SetLoggedin] = useState(false);
-  const [openModal, setopenModal] = React.useState(false);
-  const [flipislogin, setFlipislogin] = useState(false);
-  const [openSnackBar, setOpenSnackBar] = React.useState(false);
-  const [openError, setOpenError] = React.useState(false);
-  const [decodedToken, setDecodedToken] = useState(null);
-  const [totalCartItems, setTotalCartItems] = useState(null);
-
   const navigate = useNavigate();
+
+  //   Drawer Comp
+  const theme = useTheme();
+  const isMatch = useMediaQuery(theme.breakpoints.down("sm"));
+  const [value, setValue] = useState(null);
+
+  //   Menu OpenCLose
+  const [anchorEl2, setAnchorEl2] = React.useState(null);
+  const open2 = Boolean(anchorEl2);
+  const handleClick2 = (event) => {
+    setAnchorEl2(event.currentTarget);
+  };
+  const handleClose2 = () => {
+    setAnchorEl2(null);
+  };
+
+  //   FeedBack/Alert
+  const [openSnackBar, setOpenSnackBar] = React.useState(false);
+  const [isLoggedin, SetLoggedin] = useState(false);
 
   // Alert Handlers
   const handleLoginSucess = () => {
@@ -66,7 +87,12 @@ const NavBar = ({ isUpdated }) => {
     SetLoggedin(false);
   };
 
+  //   User Handle
   // Login/register Handler
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [flipislogin, setFlipislogin] = useState(false);
+  const [openModal, setopenModal] = React.useState(false);
+
   const handleflipLogin = () =>
     flipislogin ? setFlipislogin(false) : setFlipislogin(true);
 
@@ -74,7 +100,6 @@ const NavBar = ({ isUpdated }) => {
   const handleCloseModal = () => setopenModal(false);
 
   const open = Boolean(anchorEl);
-  const open2 = Boolean(anchorEl2);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -82,15 +107,10 @@ const NavBar = ({ isUpdated }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleClick2 = (event) => {
-    setAnchorEl2(event.currentTarget);
-  };
-  const handleClose2 = () => {
-    setAnchorEl2(null);
-  };
 
   // Decrypting User using accessToken
   const token = cookies.get("accessToken");
+  const [decodedToken, setDecodedToken] = useState(null);
 
   useEffect(() => {
     const token = cookies.get("accessToken");
@@ -106,6 +126,9 @@ const NavBar = ({ isUpdated }) => {
     cookies.remove("accessToken", { path: "/" });
     window.location.href = "/";
   };
+
+  //   Cart
+  const [totalCartItems, setTotalCartItems] = useState(null);
 
   // Handle Cart Get Request
   useEffect(() => {
@@ -123,7 +146,6 @@ const NavBar = ({ isUpdated }) => {
       )
       .then((response) => {
         setTotalCartItems(response.data);
-        console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -132,202 +154,255 @@ const NavBar = ({ isUpdated }) => {
 
   return (
     <div className="NavBar">
-      {/* title */}
-      <h1 className="title">Ecommerce App</h1>
-      <Box
-        sx={{ display: "flex", alignItems: "center", textAlign: "center" }}
-        className="Box"
-      >
-        {/* Menu List */}
-        <div className="NavLink">
-          <Button
-            variant="text"
-            style={{ color: "Black" }}
-            onClick={() => navigate("/")}
-          >
-            Home
-          </Button>
-          <Button
-            variant="text"
-            style={{ color: "Black" }}
-            id="basic-button"
-            aria-controls={open2 ? "category-menu" : undefined}
-            aria-haspopup="true"
-            aria-expanded={open2 ? "true" : undefined}
-            onClick={handleClick2}
-          >
-            Category
-          </Button>
-          <Menu
-            id="category-menu"
-            anchorEl={anchorEl2}
-            open={open2}
-            onClose={handleClose2}
-            MenuListProps={{
-              "aria-labelledby": "basic-button",
-            }}
-          >
-            <MenuItem onClick={() => navigate("/Category/Electronics")}>
-              Electronics
-            </MenuItem>
-            <MenuItem onClick={() => navigate("/Category/Furniture")}>
-              Furnitures
-            </MenuItem>
-            <MenuItem onClick={() => navigate("/Category/Mobiles")}>
-              Mobiles
-            </MenuItem>
-          </Menu>
-          <Button
-            variant="text"
-            style={{ color: "Black" }}
-            onClick={() => navigate("/about-us")}
-          >
-            Contact
-          </Button>
-        </div>
+      <AppBar sx={{ backgroundColor: "white" }} position="static">
+        <Toolbar>
+          <Grid sx={{ placeItems: "center" }} container>
+            {isMatch == true ? (
+              <>
+                <Grid item xs={4}>
+                  <Typography sx={{ color: "black" }}>Ecommerce App</Typography>
+                </Grid>
+                <Grid item xs={8}>
+                  <Box display="flex">
+                    <Button
+                      variant="text"
+                      color="warning"
+                      onClick={() => navigate("/Cart")}
+                      sx={{ marginLeft: "auto" }}
+                    >
+                      <Badge
+                        sx={{ marginLeft: 1 }}
+                        badgeContent={
+                          totalCartItems ? totalCartItems.totalItems : 0
+                        }
+                        color="secondary"
+                      >
+                        <ShoppingCartIcon fontSize="small" />
+                      </Badge>
+                    </Button>
+                    <DrawerComp
+                      decodedToken={decodedToken}
+                      handlelogout={handlelogout}
+                      handleOpenModal={handleOpenModal}
+                    />
+                  </Box>
+                </Grid>
+              </>
+            ) : (
+              <>
+                <Grid item xs={2}>
+                  <Typography sx={{ color: "black" }}>Ecommerce App</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Tabs
+                    indicatorColor="secondary"
+                    value={value}
+                    onChange={(e, val) => setValue(val)}
+                  >
+                    <Tab label="Home" onClick={() => navigate(`/`)} />
+                    <Tab
+                      variant="text"
+                      style={{ color: "Black" }}
+                      id="basic-button"
+                      aria-controls={open2 ? "category-menu" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open2 ? "true" : undefined}
+                      // onChange={(e, val) => setValue(val)}
+                      onClick={handleClick2}
+                      label="Category"
+                    >
+                      Category
+                    </Tab>
+                    <Tab
+                      label="About Us"
+                      // value={value}
+                      // onChange={(e, val) => setValue(val)}
+                      onClick={() => navigate(`/about-us`)}
+                    />
+                    <Menu
+                      id="category-menu"
+                      anchorEl={anchorEl2}
+                      open={open2}
+                      onClose={handleClose2}
+                      MenuListProps={{
+                        "aria-labelledby": "basic-button",
+                      }}
+                    >
+                      {["Electronics", "Furniture", "Mobiles", "Books"].map(
+                        (text, index) => (
+                          <MenuItem
+                            onClick={() => navigate(`/Category/${text}`)}
+                          >
+                            {text}
+                          </MenuItem>
+                        )
+                      )}
+                    </Menu>
+                  </Tabs>
+                </Grid>
+                <Grid item xs={4}>
+                  <Box display="flex">
+                    {token ? (
+                      <Box sx={{ marginLeft: "auto" }}>
+                        <Button
+                          variant="text"
+                          color="warning"
+                          onClick={() => navigate("/Cart")}
+                        >
+                          <Badge
+                            badgeContent={
+                              totalCartItems ? totalCartItems.totalItems : 0
+                            }
+                            color="secondary"
+                          >
+                            <ShoppingCartIcon fontSize="small" />
+                          </Badge>
+                        </Button>
 
-        {/* Cart Button */}
-        <div>
-          <Button
-            variant="text"
-            color="warning"
-            onClick={() => navigate("/Cart")}
-          >
-            <Badge
-              badgeContent={totalCartItems ? totalCartItems.totalItems : 0}
-              color="secondary"
-            >
-              <ShoppingCartIcon fontSize="small" />
-            </Badge>
-          </Button>
-        </div>
+                        <Tooltip
+                          title="Account settings"
+                          sx={{ marginLeft: 1 }}
+                        >
+                          <IconButton
+                            onClick={handleClick}
+                            size="small"
+                            sx={{ ml: 2 }}
+                            aria-controls={open ? "account-menu" : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? "true" : undefined}
+                          >
+                            <Avatar sx={{ width: 32, height: 32 }}>
+                              {decodedToken != null
+                                ? decodedToken.user.name[0]
+                                : "A"}
+                            </Avatar>
+                          </IconButton>
+                        </Tooltip>
+                        {/* Account Section in Navbar */}
+                        <Menu
+                          anchorEl={anchorEl}
+                          id="account-menu"
+                          open={open}
+                          onClose={handleClose}
+                          onClick={handleClose}
+                          PaperProps={{
+                            elevation: 0,
+                            sx: {
+                              overflow: "visible",
+                              filter:
+                                "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                              mt: 1.5,
+                              "& .MuiAvatar-root": {
+                                width: 32,
+                                height: 32,
+                                ml: -0.5,
+                                mr: 1,
+                              },
+                              "&:before": {
+                                content: '""',
+                                display: "block",
+                                position: "absolute",
+                                top: 0,
+                                right: 14,
+                                width: 10,
+                                height: 10,
+                                bgcolor: "background.paper",
+                                transform: "translateY(-50%) rotate(45deg)",
+                                zIndex: 0,
+                              },
+                            },
+                          }}
+                          transformOrigin={{
+                            horizontal: "right",
+                            vertical: "top",
+                          }}
+                          anchorOrigin={{
+                            horizontal: "right",
+                            vertical: "bottom",
+                          }}
+                        >
+                          <MenuItem onClick={handleClose}>
+                            {decodedToken != null
+                              ? decodedToken.user.name
+                              : "Your Name"}
+                          </MenuItem>
+                          <Divider />
+                          <MenuItem onClick={() => navigate("/dashboard")}>
+                            <Avatar /> Account
+                          </MenuItem>
+                          <Divider />
 
-        {/* Login Modal */}
-        {token ? (
-          <Tooltip title="Account settings">
-            <IconButton
-              onClick={handleClick}
-              size="small"
-              sx={{ ml: 2 }}
-              aria-controls={open ? "account-menu" : undefined}
-              aria-haspopup="true"
-              aria-expanded={open ? "true" : undefined}
-            >
-              <Avatar sx={{ width: 32, height: 32 }}>
-                {decodedToken != null ? decodedToken.user.name[0] : "A"}
-              </Avatar>
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <div>
-            <Button onClick={handleOpenModal}>Log In</Button>
-            <Modal
-              open={openModal}
-              onClose={handleCloseModal}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <Box sx={style} className="d-flex justify-content-center">
-                {flipislogin ? (
-                  <Login
-                    handleflipLogin={handleflipLogin}
-                    handleLoginSucess={handleLoginSucess}
-                    handleCloseModal={handleCloseModal}
-                  />
-                ) : (
-                  <Register
-                    handleflipLogin={handleflipLogin}
-                    handleSucess={handleSucess}
-                  />
-                )}
-              </Box>
-            </Modal>
-          </div>
-        )}
-      </Box>
-      {/* Account Section in Navbar */}
-      <Menu
-        anchorEl={anchorEl}
-        id="account-menu"
-        open={open}
-        onClose={handleClose}
-        onClick={handleClose}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            overflow: "visible",
-            filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-            mt: 1.5,
-            "& .MuiAvatar-root": {
-              width: 32,
-              height: 32,
-              ml: -0.5,
-              mr: 1,
-            },
-            "&:before": {
-              content: '""',
-              display: "block",
-              position: "absolute",
-              top: 0,
-              right: 14,
-              width: 10,
-              height: 10,
-              bgcolor: "background.paper",
-              transform: "translateY(-50%) rotate(45deg)",
-              zIndex: 0,
-            },
-          },
-        }}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-      >
-        <MenuItem onClick={handleClose}>
-          {decodedToken != null ? decodedToken.user.name : "Your Name"}
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={() => navigate("/dashboard")}>
-          <Avatar /> Account
-        </MenuItem>
-        <Divider />
-
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <ShoppingCartIcon fontSize="small" />
-          </ListItemIcon>
-          Cart
-        </MenuItem>
-        <MenuItem onClick={handlelogout}>
-          <ListItemIcon onClick={handlelogout}>
-            <Logout fontSize="small" />
-          </ListItemIcon>
-          Logout
-        </MenuItem>
-        {decodedToken != null ? (
-          decodedToken.user.isAdmin ? (
-            <MenuItem onClick={() => navigate("/admin-dashboard")}>
-              <Avatar /> Admin DashBoard
-            </MenuItem>
-          ) : (
-            ""
-          )
-        ) : (
-          ""
-        )}
-      </Menu>
+                          <MenuItem onClick={handleClose}>
+                            <ListItemIcon>
+                              <ShoppingCartIcon fontSize="small" />
+                            </ListItemIcon>
+                            Cart
+                          </MenuItem>
+                          <MenuItem onClick={handlelogout}>
+                            <ListItemIcon onClick={handlelogout}>
+                              <Logout fontSize="small" />
+                            </ListItemIcon>
+                            Logout
+                          </MenuItem>
+                          {decodedToken != null ? (
+                            decodedToken.user.isAdmin ? (
+                              <MenuItem
+                                onClick={() => navigate("/admin-dashboard")}
+                              >
+                                <Avatar /> Admin DashBoard
+                              </MenuItem>
+                            ) : (
+                              ""
+                            )
+                          ) : (
+                            ""
+                          )}
+                        </Menu>
+                      </Box>
+                    ) : (
+                      // End of Logged User
+                      // If User Not Logged in
+                      <>
+                        <Box sx={{ marginLeft: "auto" }}>
+                          <Button
+                            sx={{ marginLeft: "auto" }}
+                            variant="contained"
+                            onClick={handleOpenModal}
+                          >
+                            Login
+                          </Button>
+                        </Box>
+                      </>
+                    )}
+                  </Box>
+                </Grid>
+              </>
+            )}
+          </Grid>
+        </Toolbar>
+      </AppBar>
       {/* Alert Notification Bar */}
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={6000}
-        onClose={handleClosesnackbar}
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
       >
-        <Alert
-          onClose={handleClosesnackbar}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
-          User Created Sucessfully
-        </Alert>
-      </Snackbar>
+        <Box sx={style} className="d-flex justify-content-center">
+          {flipislogin ? (
+            <Register
+              handleflipLogin={handleflipLogin}
+              handleSucess={handleSucess}
+            />
+          ) : (
+            <Login
+              handleflipLogin={handleflipLogin}
+              handleLoginSucess={handleLoginSucess}
+              handleCloseModal={handleCloseModal}
+            />
+          )}
+        </Box>
+      </Modal>
       <Snackbar
         open={isLoggedin}
         autoHideDuration={6000}
