@@ -7,6 +7,9 @@ import Alert from "@mui/material/Alert";
 
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import { Box, CardMedia, Grid } from "@mui/material";
+import { AddBoxOutlined } from "@mui/icons-material";
+import { padding } from "@mui/system";
 
 const cookies = new Cookies();
 
@@ -15,7 +18,7 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
   const navigate = useNavigate();
   const token = cookies.get("accessToken");
 
-  const url = `https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/products/${params.id}`;
+  const url = `${process.env.REACT_APP_API}ecomm/api/v1/products/${params.id}`;
 
   const [fetchedData, setFetchedData] = useState(null);
   const [openSnackBar, setOpenSnackBar] = React.useState(false);
@@ -43,14 +46,15 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
     const getData = async () => {
       const { data } = await axios.get(url);
       setFetchedData(data);
+      // console.log(data);
     };
     getData();
-  }, [url]);
-  
+  }, []);
+
   // Handle Create Request
   const configuration = {
     method: "post",
-    url: "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/cart/add",
+    url: `${process.env.REACT_APP_API}ecomm/api/v1/cart/add`,
     headers: {
       Authorization: token,
       "Content-Type": "application/json",
@@ -74,66 +78,85 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
   };
   return (
     <div>
-      <div
-        className="d-flex flex-wrap justify-content-evenly align-items-center gap-3 p-5"
-        height={"100%"}
-      >
+      <Box>
         {fetchedData ? (
-          <div className="d-flex flex-wrap justify-content-center align-items-center gap-3">
-            <img
-              src={fetchedData.imageUrl}
-              alt={"Image Not Found"}
-              loading="lazy"
-              height={"480px"}
-              width={"500px"}
-              style={{ objectFit: "contain" }}
-            />
-            <div>
-              <Typography gutterBottom variant="h5" component="div">
-                {fetchedData.name}
-              </Typography>
+          <Grid container sx={{ placeItems: "center", padding: "20px" }}>
+            <Grid item sm={6} xs={12}>
+              <img
+                src={fetchedData.imageUrl}
+                style={{ height: "50vh", width: "50vh" }}
+              />
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              <Box>
+                <Typography gutterBottom variant="h5" component="div">
+                  {fetchedData.name}
+                </Typography>
 
-              {/* <Button variant="contained">View</Button> */}
-              <p className="card-text d-flex gap-2 justify-content-center">
-                ₹{fetchedData.price}{" "}
-                <a className="text-decoration-line-through">
-                  ₹
-                  {Math.floor((fetchedData.price / 100) * 20) +
-                    fetchedData.price}{" "}
-                </a>
-                <a className="text-success text-decoration-none">20% Off</a>
-              </p>
-              <div className="d-flex justify-content-evenly gap-3">
-                <button
-                  className="btn btn-primary"
-                  onClick={() => AddToCart(fetchedData._id)}
+                <p className="card-text d-flex gap-2 justify-content-center">
+                  ₹{fetchedData.price}{" "}
+                  <a className="text-decoration-line-through">
+                    ₹
+                    {Math.floor((fetchedData.price / 100) * 20) +
+                      fetchedData.price}{" "}
+                  </a>
+                  <a className="text-success text-decoration-none">20% Off</a>
+                </p>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 1,
+                    justifyContent: "center",
+                  }}
                 >
-                  Add to Cart
-                </button>
-                <button href="#" className="btn btn-warning">
-                  Buy Now
-                </button>
-              </div>
-            </div>
-          </div>
+                  <Button
+                    variant="contained"
+                    onClick={() => AddToCart(fetchedData._id)}
+                  >
+                    Add to Cart
+                  </Button>
+                  <Button variant="contained" sx={{ bgcolor: "warning.main" }}>
+                    Buy Now
+                  </Button>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
         ) : (
           "No Products Found"
         )}
-      </div>
+      </Box>
+
       {fetchedData ? (
-        <div className="p-4">
-          <Typography gutterBottom variant="h5" component="div">
+        <Box>
+          <Typography
+            gutterBottom
+            variant="h5"
+            component="div"
+            padding={"10px"}
+          >
             Description
           </Typography>
-          <Typography variant="h8">{fetchedData.description}</Typography>
-        </div>
+          <Typography
+            variant="h8"
+            // padding={"20px"}
+            sx={{
+              display: "flex",
+              justifyContent: "space-evenly",
+              padding: "20px",
+            }}
+          >
+            {fetchedData.description}
+          </Typography>
+        </Box>
       ) : (
-        <div>
+        <Box>
           <Typography gutterBottom variant="h5" component="div">
             Description
           </Typography>
           <Typography variant="h8">"No Data Found"</Typography>
-        </div>
+        </Box>
       )}
       {/* Alert Notification Bar */}
       <Snackbar

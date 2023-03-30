@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import { CardActionArea } from "@mui/material";
-import Button from "@mui/material/Button";
+import {
+  Box,
+  CardActionArea,
+  Grid,
+  Button,
+  Typography,
+  CardMedia,
+  CardContent,
+  Card,
+} from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
@@ -39,8 +43,7 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
     setIsUpdated(false);
   };
 
-  const url =
-    "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/products";
+  const url = `${process.env.REACT_APP_API}ecomm/api/v1/products`;
 
   const [fetchedData, setFetchedData] = useState(null);
 
@@ -48,15 +51,16 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
     const getData = async () => {
       const { data } = await axios.get(url);
       setFetchedData(data);
+      // console.log("Carditems Fetched",data);
     };
     getData();
-  }, [url]);
+  }, []);
 
   const token = cookies.get("accessToken");
   // Handle Create Request
   const configuration = {
     method: "post",
-    url: "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/cart/add",
+    url: `${process.env.REACT_APP_API}ecomm/api/v1/cart/add`,
     headers: {
       Authorization: token,
       "Content-Type": "application/json",
@@ -81,60 +85,84 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
   return (
     <div>
       <h1 className="Heading">On Sale {params.category}</h1>
-      <div className="d-flex flex-wrap justify-content-evenly gap-3">
+      <Grid
+        container
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+        spacing={{ xs: 2, md: 3 }}
+      >
         {fetchedData
           ? fetchedData
               .filter((products) => products.category == params.category)
               .map((items) => (
-                <Card
-                  sx={{
-                    maxWidth: 280,
-                    margin: "0 auto",
-                    padding: "0.1em",
-                  }}
-                >
-                  <CardActionArea>
-                    <CardMedia
-                      className={"Media"}
-                      component="img"
-                      height="240"
-                      width={"100"}
-                      image={items.imageUrl}
-                      alt="No image Found"
-                      sx={{ padding: "1em 1em 0 1em", objectFit: "contain" }}
-                      onClick={() => navigate(`/products/${items._id}`)}
-                    />
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="div">
-                        {items.name}
-                      </Typography>
-                      {/* <Button variant="contained">View</Button> */}
-                      <p className="card-text d-flex gap-2 justify-content-center">
-                        ₹{items.price}{" "}
-                        <a className="text-decoration-line-through">
-                          ₹{Math.floor((items.price / 100) * 20) + items.price}{" "}
-                        </a>
-                        <a className="text-success text-decoration-none">
-                          20% Off
-                        </a>
-                      </p>
-                      <div className="d-flex gap-3">
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => AddToCart(items._id)}
+                <Grid item key={items._id}>
+                  <Card
+                    sx={{
+                      maxWidth: 280,
+                      margin: "0 auto",
+                      padding: "0.1em",
+                      minHeight: 450,
+                    }}
+                  >
+                    <CardActionArea>
+                      <CardMedia
+                        className={"Media"}
+                        component="img"
+                        height="240"
+                        width={"100"}
+                        image={items.imageUrl}
+                        alt="No image Found"
+                        sx={{ padding: "1em 1em 0 1em", objectFit: "contain" }}
+                        onClick={() => navigate(`/products/${items._id}`)}
+                      />
+                      <CardContent>
+                        <Typography
+                          gutterBottom
+                          variant="h5"
+                          component="div"
+                          sx={{
+                            lineHeight: "1.5em",
+                            height: "3em",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            width: "100%",
+                          }}
                         >
-                          Add to Cart
-                        </button>
-                        <button href="#" className="btn btn-warning">
-                          Buy Now
-                        </button>
-                      </div>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
+                          {items.name}
+                        </Typography>
+                        {/* <Button variant="contained">View</Button> */}
+                        <p className="card-text d-flex gap-2 justify-content-center">
+                          ₹{items.price}{" "}
+                          <a className="text-decoration-line-through">
+                            ₹
+                            {Math.floor((items.price / 100) * 20) + items.price}{" "}
+                          </a>
+                          <a className="text-success text-decoration-none">
+                            20% Off
+                          </a>
+                        </p>
+                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                          <Button
+                            variant="contained"
+                            onClick={() => AddToCart(items._id)}
+                          >
+                            Add to Cart
+                          </Button>
+                          <Button
+                            variant="contained"
+                            sx={{ bgcolor: "warning.main" }}
+                          >
+                            Buy Now
+                          </Button>
+                        </Box>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
               ))
           : "No Products Found"}
-      </div>
+      </Grid>
       {/* Alert Notification Bar */}
       <Snackbar
         open={openError}

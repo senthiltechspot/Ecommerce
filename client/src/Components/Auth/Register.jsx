@@ -45,7 +45,7 @@ const Register = ({ handleflipLogin, handleSucess }) => {
   };
   const configuration = {
     method: "post",
-    url: `${process.env.REACT_APP_API}/ecomm/api/v1/auth/signup`,
+    url: `${process.env.REACT_APP_API}ecomm/api/v1/auth/signup`,
     data: {
       name: name,
       username: username,

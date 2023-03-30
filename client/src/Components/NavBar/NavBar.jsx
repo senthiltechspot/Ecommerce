@@ -138,12 +138,9 @@ const NavBar = ({ isUpdated }) => {
     };
 
     axios
-      .get(
-        "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/cart/items",
-        {
-          headers: headers,
-        }
-      )
+      .get(`${process.env.REACT_APP_API}ecomm/api/v1/cart/items`, {
+        headers: headers,
+      })
       .then((response) => {
         setTotalCartItems(response.data);
       })

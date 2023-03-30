@@ -69,8 +69,6 @@ const Orders = () => {
 
   const [data, setData] = React.useState([]);
 
-  const [openSnackBar, setOpenSnackBar] = React.useState(false);
-  const [openError, setOpenError] = React.useState(false);
   const [open, setOpen] = React.useState(false);
 
   const [orderStatus, setOrderStatus] = React.useState(null);
@@ -88,24 +86,7 @@ const Orders = () => {
     setOpen(false);
   };
 
-  const handleClickError = () => {
-    setOpenError(true);
-  };
   const token = cookies.get("accessToken");
-
-  const handleSucess = () => {
-    setOpenSnackBar(true);
-    setisupdate(true);
-  };
-
-  const handleClosesnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenError(false);
-    setOpenSnackBar(false);
-    setisupdate(false);
-  };
 
   //   Get order details for the user
   React.useEffect(() => {
@@ -114,13 +95,12 @@ const Orders = () => {
       "Content-Type": "application/json",
     };
     axios
-      .get(
-        `https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/MyOrders/${orderid}`,
-        { headers }
-      )
+      .get(`${process.env.REACT_APP_API}ecomm/api/v1/MyOrders/${orderid}`, {
+        headers,
+      })
       .then((response) => {
         setorderDetails(response.data);
-        console.log(response.data);
+        console.log("order Details", response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -134,63 +114,19 @@ const Orders = () => {
       "Content-Type": "application/json",
     };
     axios
-      .get(
-        "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/myOrders",
-        { headers }
-      )
+      .get(`${process.env.REACT_APP_API}ecomm/api/v1/myOrders`, { headers })
       .then((response) => {
         setData(response.data);
-        console.log(response.data);
+        console.log("Data", response.data);
       })
       .catch((error) => {
         console.log(error);
       });
   }, [isupdate]);
 
-  //   Get Product details
-  //   React.useEffect(() => {
-  //     axios
-  //       .get(
-  //         `https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/products/${
-  //           orderDetails ? ProductDetails.name : "640c58dcff5e3a5097ef4bd4"
-  //         }`
-  //       )
-  //       .then((response) => {
-  //         setProductDetails(response.data);
-  //         console.log(response.data);
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       });
-  //   }, [ProductDetails]);
-
-  //   const getProductdetails = (productid) => {
-  //     axios
-  //       .get(
-  //         `https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/products/${productid}`
-  //       )
-  //       .then((response) => {
-  //         // setProductDetails(response.data);
-  //         // console.log(response.data);
-  //         return response.data;
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       });
-  //   };
-  //   useEffect(() => {
-  //     if (orderDetails) {
-  //       const productdetail = orderDetails.products.map((products) => {
-  //          getProductdetails(products.product);
-  //       });
-  //       console.log("Productdetailsget", productdetail);
-  //       setProductDetails(productdetail);
-  //     }
-  //   }, [orderDetails]);
-
   return (
     <div>
-      <Box sx={{ flexGrow: 1, maxWidth: "100%" }}>
+      <Box sx={{ maxWidth: "100%" }}>
         <Grid item xs={12} md={6}>
           <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
             List of All
@@ -232,32 +168,6 @@ const Orders = () => {
           </Demo>
         </Grid>
 
-        <Snackbar
-          open={openSnackBar}
-          autoHideDuration={6000}
-          onClose={handleClosesnackbar}
-        >
-          <Alert
-            onClose={handleClosesnackbar}
-            severity="success"
-            sx={{ width: "100%" }}
-          >
-            Operation Completed Sucessfully
-          </Alert>
-        </Snackbar>
-        <Snackbar
-          open={openError}
-          autoHideDuration={6000}
-          onClose={handleClosesnackbar}
-        >
-          <Alert
-            onClose={handleClosesnackbar}
-            severity="error"
-            sx={{ width: "100%" }}
-          >
-            Something went Wrong
-          </Alert>
-        </Snackbar>
         <Modal
           open={open}
           onClose={handleClose}
@@ -269,11 +179,9 @@ const Orders = () => {
               Order ID : {orderid}
             </Typography>
             {orderDetails ? (
-              <div
-                className={"d-flex flex-column gap-3 justify-content-center"}
-              >
+              <Grid container>
                 <TableContainer component={Paper}>
-                  <Table sx={{ minWidth: 650 }} aria-label="caption table">
+                  <Table aria-label="caption table">
                     <TableHead>
                       <TableRow>
                         <TableCell sx={tableborder} align="centre">
@@ -334,14 +242,14 @@ const Orders = () => {
                     No Shipping Address Found
                   </Typography>
                 )}
-              </div>
+              </Grid>
             ) : (
               <></>
             )}
 
             {orderDetails ? (
               <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="caption table">
+                <Table aria-label="caption table">
                   <TableHead>
                     <TableRow>
                       <TableCell sx={tableborder} align="centre">
@@ -356,13 +264,10 @@ const Orders = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {orderDetails.products.map((products) => {
+                    {orderDetails.products.map((products) => (
                       <TableRow>
                         <TableCell sx={tableborder} align="centre">
-                          {/* {getProductdetails(products.product)} */}
-                          {ProductDetails
-                            ? ProductDetails.name
-                            : products.product}
+                          {products.name ? products.name : products.product}
                         </TableCell>
                         <TableCell sx={tableborder} align="centre">
                           {products.quantity}
@@ -370,8 +275,8 @@ const Orders = () => {
                         <TableCell sx={tableborder} align="centre">
                           {products.price}
                         </TableCell>
-                      </TableRow>;
-                    })}
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </TableContainer>

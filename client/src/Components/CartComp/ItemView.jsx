@@ -19,9 +19,10 @@ import Select from "@mui/material/Select";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const cookies = new Cookies();
 
@@ -30,8 +31,7 @@ const ItemView = () => {
 
   const token = cookies.get("accessToken");
 
-  const url =
-    "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/cart/items";
+  const url = `${process.env.REACT_APP_API}ecomm/api/v1/cart/items`;
 
   const [fetchedData, setFetchedData] = useState(null);
   const [update, setUpdate] = useState(false);
@@ -42,8 +42,9 @@ const ItemView = () => {
   const [zip, setZip] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [orderItems, setorderitems] = useState(null);
-  const [openSnackBar, setOpenSnackBar] = React.useState(false);
-  const [openError, setOpenError] = React.useState(false);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [openError, setOpenError] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
 
   const handleSucess = () => {
     setOpenSnackBar(true);
@@ -61,6 +62,7 @@ const ItemView = () => {
     }
     setOpenSnackBar(false);
     setUpdate(false);
+    setOpenError(false);
   };
 
   useEffect(() => {
@@ -78,7 +80,7 @@ const ItemView = () => {
   const handleDelete = (id) => {
     const configuration = {
       method: "delete",
-      url: `https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/cart/items/${id}`,
+      url: `${process.env.REACT_APP_API}ecomm/api/v1/cart/items/${id}`,
       headers: {
         Authorization: token,
         "Content-Type": "application/json",
@@ -100,7 +102,7 @@ const ItemView = () => {
     if (orderItems.length > 0) {
       const configuration = {
         method: "post",
-        url: `https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/CreateOrder`,
+        url: `${process.env.REACT_APP_API}ecomm/api/v1/CreateOrder`,
         headers: {
           Authorization: token,
           "Content-Type": "application/json",
@@ -119,15 +121,17 @@ const ItemView = () => {
           },
         },
       };
-
+      setisLoading(true);
       axios(configuration)
         .then(async (res) => {
           handleSucess();
           await handleDeleteCart();
           setUpdate(true);
+          setisLoading(false);
           navigate("/checkout");
         })
         .catch((error) => {
+          setisLoading(false);
           console.log(error);
           handleClickError();
         });
@@ -136,16 +140,6 @@ const ItemView = () => {
     }
   };
 
-  //   if (fetchedData) {
-
-  //     let AllItems = fetchedData.items.map((item) => ({
-  //       product: item.productId._id,
-  //       quantity: item.quantity,
-  //       price: item.productId._id,
-  //     }));
-  //     setorderitems(AllItems);
-  //     console.log("fetchedOrderitems", AllItems);
-  //   }
   function AddItems() {
     let AllItems = fetchedData.items.map((item) => ({
       product: item.productId._id,
@@ -160,7 +154,7 @@ const ItemView = () => {
   const handleDeleteCart = () => {
     const configuration = {
       method: "delete",
-      url: `https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/cart/`,
+      url: `${process.env.REACT_APP_API}ecomm/api/v1/cart/`,
       headers: {
         Authorization: token,
         "Content-Type": "application/json",
@@ -179,10 +173,35 @@ const ItemView = () => {
   };
   return (
     <div>
+      {isLoading ? (
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "100%",
+            height: "100%",
+            background: "#ccc",
+            opacity: 0.5,
+            zIndex: 1,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <CircularProgress
+            sx={{
+              zIndex: 2,
+            }}
+          />
+        </Box>
+      ) : (
+        <></>
+      )}
       <div className="container-fluid d-flex flex-column gap-3 mt-3">
         <div className="card" style={{ width: "100%" }}>
-          <div className="card-header">Featured</div>
-
+          <div className="card-header">Products</div>
           {fetchedData
             ? fetchedData.items.map((item) => (
                 <List
@@ -223,7 +242,7 @@ const ItemView = () => {
               bgcolor: "background.paper",
             }}
           >
-            <div className="d-flex gap-3 p-3">
+            <div className="d-flex flex-wrap gap-3 p-3 justify-content-center">
               <TextField
                 required
                 id="address"
@@ -343,7 +362,7 @@ const ItemView = () => {
       >
         <Alert
           onClose={handleClosesnackbar}
-          severity="success"
+          severity="warning"
           sx={{ width: "100%" }}
         >
           Something Went Wrong Try Again

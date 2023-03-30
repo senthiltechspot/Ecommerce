@@ -47,7 +47,7 @@ const Login = ({ handleflipLogin, handleLoginSucess, handleCloseModal }) => {
 
   const configuration = {
     method: "post",
-    url: `${process.env.REACT_APP_API}/ecomm/api/v1/auth/signin`,
+    url: `${process.env.REACT_APP_API}ecomm/api/v1/auth/signin`,
     data: {
       username: username,
       password: password,

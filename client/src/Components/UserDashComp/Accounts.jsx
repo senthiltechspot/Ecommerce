@@ -9,6 +9,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import { Grid } from "@mui/material";
 
 const cookies = new Cookies();
 
@@ -33,10 +34,10 @@ const Accounts = () => {
     }
   }, [token]);
   return (
-    <div>
-      <div className={"d-flex gap-3 justify-content-center"}>
+    <Grid container>
+      <Grid item xs={12}>
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="caption table">
+          <Table aria-label="caption table">
             <TableHead>
               <TableRow>
                 <TableCell sx={tableborder} align="centre">
@@ -77,8 +78,8 @@ const Accounts = () => {
             </TableBody>
           </Table>
         </TableContainer>
-      </div>
-    </div>
+      </Grid>
+    </Grid>
   );
 };
 
