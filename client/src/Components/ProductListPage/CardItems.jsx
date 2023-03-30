@@ -87,6 +87,15 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
       setOpenLoginError(true);
     }
   };
+
+  const BuyNow = () => {
+    if (token) {
+      AddToCart(items._id);
+      navigate(`/cart`);
+    } else {
+      setOpenLoginError(true);
+    }
+  };
   return (
     <div>
       <h1 className="Heading">On Sale {params.category}</h1>
@@ -157,10 +166,7 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
                           <Button
                             variant="contained"
                             sx={{ bgcolor: "warning.main" }}
-                            onClick={() => {
-                              AddToCart(items._id);
-                              navigate(`/cart`);
-                            }}
+                            onClick={() => BuyNow()}
                           >
                             Buy Now
                           </Button>

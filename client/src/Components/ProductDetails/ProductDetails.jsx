@@ -80,15 +80,35 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
       setOpenLoginError(true);
     }
   };
+  const BuyNow = () => {
+    if (token) {
+      AddToCart(items._id);
+      navigate(`/cart`);
+    } else {
+      setOpenLoginError(true);
+    }
+  };
   return (
     <div>
       <Box>
         {fetchedData ? (
           <Grid container sx={{ placeItems: "center", padding: "20px" }}>
-            <Grid item sm={6} xs={12}>
+            <Grid
+              item
+              sm={6}
+              xs={12}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
               <img
                 src={fetchedData.imageUrl}
-                style={{ height: "50vh", width: "50vh" }}
+                style={{
+                  height: "50vh",
+                  width: "50vh",
+                  padding: "50px",
+                }}
               />
             </Grid>
             <Grid item sm={6} xs={12}>
@@ -123,10 +143,7 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
                   <Button
                     variant="contained"
                     sx={{ bgcolor: "warning.main" }}
-                    onClick={() => {
-                      AddToCart(fetchedData._id);
-                      navigate(`/cart`);
-                    }}
+                    onClick={() => BuyNow()}
                   >
                     Buy Now
                   </Button>
