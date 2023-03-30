@@ -23,6 +23,7 @@ const Checkout = () => {
           loading="lazy"
           height={"400px"}
           width={"300px"}
+          style={{ padding: "20px" }}
         />
         <Button variant="contained" onClick={() => navigate("/")}>
           Go to Home

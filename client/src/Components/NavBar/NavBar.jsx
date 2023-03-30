@@ -204,7 +204,6 @@ const NavBar = ({ isUpdated }) => {
                       aria-controls={open2 ? "category-menu" : undefined}
                       aria-haspopup="true"
                       aria-expanded={open2 ? "true" : undefined}
-                      // onChange={(e, val) => setValue(val)}
                       onClick={handleClick2}
                       label="Category"
                     >
@@ -212,8 +211,6 @@ const NavBar = ({ isUpdated }) => {
                     </Tab>
                     <Tab
                       label="About Us"
-                      // value={value}
-                      // onChange={(e, val) => setValue(val)}
                       onClick={() => navigate(`/about-us`)}
                     />
                     <Menu
@@ -320,7 +317,7 @@ const NavBar = ({ isUpdated }) => {
                         >
                           <MenuItem onClick={handleClose}>
                             {decodedToken != null
-                              ? decodedToken.user.name
+                              ? `Hi ${decodedToken.user.name}`
                               : "Your Name"}
                           </MenuItem>
                           <Divider />

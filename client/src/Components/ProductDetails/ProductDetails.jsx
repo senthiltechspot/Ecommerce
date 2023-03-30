@@ -23,7 +23,7 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
   const [fetchedData, setFetchedData] = useState(null);
   const [openSnackBar, setOpenSnackBar] = React.useState(false);
   const [openError, setOpenError] = React.useState(false);
-  const [productId, setProductId] = useState("");
+  const [openLoginError, setOpenLoginError] = React.useState(false);
 
   const handleSucess = () => {
     setOpenSnackBar(true);
@@ -41,6 +41,7 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
     setOpenError(false);
     setOpenSnackBar(false);
     setIsUpdated(false);
+    setOpenLoginError(false);
   };
   useEffect(() => {
     const getData = async () => {
@@ -51,30 +52,33 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
     getData();
   }, []);
 
-  // Handle Create Request
-  const configuration = {
-    method: "post",
-    url: `${process.env.REACT_APP_API}ecomm/api/v1/cart/add`,
-    headers: {
-      Authorization: token,
-      "Content-Type": "application/json",
-    },
-    data: {
-      productId: productId,
-      quantity: 1,
-    },
-  };
-
+  // Handle Add to Cart Request
   const AddToCart = async (id) => {
-    setProductId(id);
-    axios(configuration)
-      .then((result) => {
-        handleSucess();
-      })
-      .catch((error) => {
-        handleError();
-        console.log(error);
-      });
+    if (token) {
+      axios
+        .post(
+          `${process.env.REACT_APP_API}ecomm/api/v1/cart/add`,
+          {
+            productId: id,
+            quantity: 1,
+          },
+          {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((result) => {
+          handleSucess();
+        })
+        .catch((error) => {
+          handleError();
+          console.log(error);
+        });
+    } else {
+      setOpenLoginError(true);
+    }
   };
   return (
     <div>
@@ -116,7 +120,14 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
                   >
                     Add to Cart
                   </Button>
-                  <Button variant="contained" sx={{ bgcolor: "warning.main" }}>
+                  <Button
+                    variant="contained"
+                    sx={{ bgcolor: "warning.main" }}
+                    onClick={() => {
+                      AddToCart(fetchedData._id);
+                      navigate(`/cart`);
+                    }}
+                  >
                     Buy Now
                   </Button>
                 </Box>
@@ -170,6 +181,19 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
           sx={{ width: "100%" }}
         >
           Cart Add Failed Kindly Retry
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={openLoginError}
+        autoHideDuration={6000}
+        onClose={handleClosesnackbar}
+      >
+        <Alert
+          onClose={handleClosesnackbar}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          Kindly Login Before Adding To Cart
         </Alert>
       </Snackbar>
       <Snackbar

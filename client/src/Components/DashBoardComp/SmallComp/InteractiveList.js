@@ -103,7 +103,11 @@ export default function InteractiveList({
           {data ? (
             searchProductname ? (
               data
-                .filter((item) => item.name.includes(searchProductname))
+                .filter((item) =>
+                  item.name
+                    .toLowerCase()
+                    .includes(searchProductname.toLowerCase())
+                )
                 .map((items) => (
                   <List dense={dense} key={items._id}>
                     <ListItem

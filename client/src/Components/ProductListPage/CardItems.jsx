@@ -18,9 +18,9 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
 const CardItems = ({ isUpdated, setIsUpdated }) => {
-  const [productId, setProductId] = useState("");
   const [openSnackBar, setOpenSnackBar] = React.useState(false);
   const [openError, setOpenError] = React.useState(false);
+  const [openLoginError, setOpenLoginError] = React.useState(false);
 
   const params = useParams();
   const navigate = useNavigate();
@@ -41,6 +41,7 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
     setOpenError(false);
     setOpenSnackBar(false);
     setIsUpdated(false);
+    setOpenLoginError(false);
   };
 
   const url = `${process.env.REACT_APP_API}ecomm/api/v1/products`;
@@ -57,30 +58,34 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
   }, []);
 
   const token = cookies.get("accessToken");
-  // Handle Create Request
-  const configuration = {
-    method: "post",
-    url: `${process.env.REACT_APP_API}ecomm/api/v1/cart/add`,
-    headers: {
-      Authorization: token,
-      "Content-Type": "application/json",
-    },
-    data: {
-      productId: productId,
-      quantity: 1,
-    },
-  };
 
+  // Handle Add to Cart Request
   const AddToCart = async (id) => {
-    setProductId(id);
-    axios(configuration)
-      .then((result) => {
-        handleSucess();
-      })
-      .catch((error) => {
-        handleError();
-        console.log(error);
-      });
+    if (token) {
+      axios
+        .post(
+          `${process.env.REACT_APP_API}ecomm/api/v1/cart/add`,
+          {
+            productId: id,
+            quantity: 1,
+          },
+          {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((result) => {
+          handleSucess();
+        })
+        .catch((error) => {
+          handleError();
+          console.log(error);
+        });
+    } else {
+      setOpenLoginError(true);
+    }
   };
   return (
     <div>
@@ -152,6 +157,10 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
                           <Button
                             variant="contained"
                             sx={{ bgcolor: "warning.main" }}
+                            onClick={() => {
+                              AddToCart(items._id);
+                              navigate(`/cart`);
+                            }}
                           >
                             Buy Now
                           </Button>
@@ -164,6 +173,19 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
           : "No Products Found"}
       </Grid>
       {/* Alert Notification Bar */}
+      <Snackbar
+        open={openLoginError}
+        autoHideDuration={6000}
+        onClose={handleClosesnackbar}
+      >
+        <Alert
+          onClose={handleClosesnackbar}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          Kindly Login Before add To Cart
+        </Alert>
+      </Snackbar>
       <Snackbar
         open={openError}
         autoHideDuration={6000}

@@ -41,10 +41,11 @@ const ItemView = () => {
   const [country, setCountry] = useState(null);
   const [zip, setZip] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState(null);
-  const [orderItems, setorderitems] = useState(null);
+  const [orderItems, setOrderItems] = useState(null);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [openError, setOpenError] = useState(false);
   const [isLoading, setisLoading] = useState(false);
+  const [EmptyError, setEmptyError] = useState(false);
 
   const handleSucess = () => {
     setOpenSnackBar(true);
@@ -63,6 +64,7 @@ const ItemView = () => {
     setOpenSnackBar(false);
     setUpdate(false);
     setOpenError(false);
+    setEmptyError(false);
   };
 
   useEffect(() => {
@@ -97,9 +99,29 @@ const ItemView = () => {
         handleClickError();
       });
   };
-  const HandlePlaceOrder = () => {
-    AddItems();
-    if (orderItems.length > 0) {
+  // function AddItems() {
+  //   let AllItems = fetchedData.items.map((item) => ({
+  //     product: item.productId._id,
+  //     quantity: item.quantity,
+  //     price: item.productId.price,
+  //   }));
+  //   setorderitems(AllItems);
+  //   // console.log("fetchedOrderitems", AllItems);
+  // }
+
+  useEffect(() => {
+    if (fetchedData) {
+      let AllItems = fetchedData.items.map((item) => ({
+        product: item.productId._id,
+        quantity: item.quantity,
+        price: item.productId.price,
+      }));
+      setOrderItems(AllItems);
+    }
+  }, [fetchedData, update]);
+  const HandlePlaceOrder = async () => {
+    // await AddItems();
+    if (orderItems) {
       const configuration = {
         method: "post",
         url: `${process.env.REACT_APP_API}ecomm/api/v1/CreateOrder`,
@@ -137,18 +159,9 @@ const ItemView = () => {
         });
     } else {
       console.log("Empty Cart");
+      setEmptyError(true);
     }
   };
-
-  function AddItems() {
-    let AllItems = fetchedData.items.map((item) => ({
-      product: item.productId._id,
-      quantity: item.quantity,
-      price: item.productId.price,
-    }));
-    setorderitems(AllItems);
-    // console.log("fetchedOrderitems", AllItems);
-  }
 
   // /ecomm/api/v1/cart
   const handleDeleteCart = () => {
@@ -366,6 +379,19 @@ const ItemView = () => {
           sx={{ width: "100%" }}
         >
           Something Went Wrong Try Again
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={EmptyError}
+        autoHideDuration={6000}
+        onClose={handleClosesnackbar}
+      >
+        <Alert
+          onClose={handleClosesnackbar}
+          severity="warning"
+          sx={{ width: "100%" }}
+        >
+          Empty Cart !
         </Alert>
       </Snackbar>
     </div>
