@@ -2,7 +2,7 @@ const Product = require("../Models/product.model");
 
 // Create a Product
 exports.CreateProduct = async (req, res) => {
-  const { name, description, price, category, imageUrl } = req.body;
+  const { name, description, price, category, imageUrl, Qty } = req.body;
 
   try {
     // Create a new product
@@ -12,6 +12,7 @@ exports.CreateProduct = async (req, res) => {
       price,
       category,
       imageUrl,
+      Qty,
     });
 
     // Save the product to the database
@@ -52,7 +53,7 @@ exports.GetProductById = async (req, res) => {
 // Update Product By Id
 exports.UpdateProductById = async (req, res) => {
   const { id } = req.params;
-  const { name, description, price, category, imageUrl } = req.body;
+  const { name, description, price, category, imageUrl, Qty } = req.body;
 
   try {
     // Check if the product exists
@@ -79,6 +80,9 @@ exports.UpdateProductById = async (req, res) => {
     }
     if (imageUrl) {
       existingProduct.imageUrl = imageUrl;
+    }
+    if (Qty) {
+      existingProduct.Qty = Qty;
     }
 
     // Save the updated product to the database

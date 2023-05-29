@@ -1,4 +1,6 @@
 const Order = require("../Models/order.model");
+const Product = require("../Models/product.model");
+
 // Get All Orders for Admin
 exports.AllOrders = async (req, res) => {
   try {
@@ -29,15 +31,33 @@ exports.CreateOrder = async (req, res) => {
       return res.status(400).json({ message: "No order items" });
     }
 
+    for (const item of orderItems) {
+      const product = await Product.findById(item.product);
+      if (!product || product.Qty < item.quantity) {
+        return res.status(404).json({
+          message: "Product is Not Available " + ` ${item.product}`,
+        });
+      }
+    }
+
     const order = new Order({
       products: orderItems,
       user: req.user._id,
       shipping: shippingAddress,
-      paymentMethod,
+      paymentMethod: paymentMethod,
       totalAmount: totalPrice,
     });
 
+    for (const item of orderItems) {
+      const product = await Product.findById(item.product);
+      product.Qty -= item.quantity;
+
+      // Save the updated product to the database
+      await product.save();
+    }
+
     const createdOrder = await order.save();
+
     res.status(201).json(createdOrder);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });

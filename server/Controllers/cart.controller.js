@@ -13,6 +13,11 @@ exports.AddtoCart = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
+    if (product.Qty < quantity) {
+      return res
+        .status(404)
+        .json({ message: "Product Quantity Not Available" });
+    }
     // Calculate the total price of the item
     const totalPrice = product.price * quantity;
 
@@ -31,8 +36,12 @@ exports.AddtoCart = async (req, res) => {
       (item) => item.productId.toString() === productId
     );
 
-    console.log(existingItem);
     if (existingItem) {
+      if (product.Qty < existingItem.quantity + quantity) {
+        return res
+          .status(404)
+          .json({ message: "Product Quantity Not Available" });
+      }
       // Update the quantity and total price of the existing item
       existingItem.quantity += quantity;
       existingItem.totalPrice += totalPrice;
@@ -128,7 +137,7 @@ exports.DeleteCart = async (req, res) => {
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
-    console.log(cart)
+    console.log(cart);
     await cart.deleteOne({ _id: cart._id });
     return res.status(200).json({ message: "Cart deleted successfully" });
   } catch (err) {

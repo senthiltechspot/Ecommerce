@@ -1,63 +1,88 @@
 const User = require("../Models/user.model");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
+const { sendEmail } = require("../Utils/NotificationMailer");
+const { userRegistration } = require("../Script/AuthScript");
 
 exports.register = async (req, res) => {
-  let { name, username, email, password, isAdmin } = req.body;
-  console.log(name, username, email, password, isAdmin);
-  try {
-    // Create a new user
-    const hashedPassword = await bcrypt.hash(password, 10);
+  let { name, username, email, password, userType } = req.body;
+  // var userType = req.body.userType;
+  var status;
 
-    const user = new User({
-      name: name,
-      username: username,
-      email: email,
-      password: hashedPassword,
-      isAdmin: isAdmin,
-    });
+  if (!userType || userType === "CUSTOMER") {
+    status = "APPROVED";
+  } else {
+    status = "PENDING";
+  }
+
+  const userObj = {
+    name: name,
+    username: username,
+    email: email,
+    userTypes: userType,
+    userStatus: status,
+    password: bcrypt.hashSync(password, 8),
+  };
+
+  try {
     // Save user in the database
-    const saveddata = await user.save();
-    res.send({ message: "User Created Successfully", saveddata });
-  } catch (error) {
-    res.status(500).send({ message: error.message || "Something went wrong" });
+    const user = await User.create(userObj);
+
+    //send the notification to the registered email that you are registered succesfully
+    const { subject, html, text } = userRegistration(user);
+
+    sendEmail([user.email], subject, html, text);
+
+    // res.send({ message: "User Created Successfully", user });
+    res.status(201).send({ message: "User Created Successfully", user });
+  } catch (e) {
+    res.status(500).send({ message: "Internal server error" });
   }
 };
 
 exports.login = async (req, res) => {
-  const { username, password } = req.body;
+  const user = await User.findOne({ username: req.body.username });
 
-  if (!username || !password) {
-    res.status(400).send({ message: "UserName or Password cannot be empty" });
-  }
-  const user = await User.findOne({ username: username });
-  if (!user) {
-    return res.status(400).send({ message: "user not found" });
+  if (user === null) {
+    return res.status(400).send({ message: "UserId passed is invalid" });
   }
 
-  try {
-    const match = await bcrypt.compare(password, user.password);
-
-    const token = jwt.sign({ user }, process.env.TOKEN_SECRET, {
-      expiresIn: "10d",
+  if (user.userStatus != "APPROVED") {
+    return res.status(200).send({
+      message: `Cant allow user to login as this user is in ${user.userStatus} state`,
     });
-
-    if (match) {
-      res.cookie("token", token, { httpOnly: true });
-
-      res.json({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        accessToken: token,
-      });
-    } else {
-      res.json({ message: "Invalid Credentials" });
-    }
-  } catch (error) {
-    return res.status(500).send({ message: error.message });
   }
+
+  const isPasswordValid = bcrypt.compareSync(req.body.password, user.password);
+
+  if (!isPasswordValid) {
+    return res.status(401).send({ message: "Invalid password!" });
+  }
+
+  var token = jwt.sign(
+    {
+      id: user._id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      userType: user.userTypes,
+      userStatus: user.userStatus,
+    },
+    process.env.TOKEN_SECRET,
+    {
+      expiresIn: 86400,
+    }
+  );
+
+  res.status(200).send({
+    name: user.name,
+    username: user.username,
+    email: user.email,
+    userType: user.userTypes,
+    userStatus: user.userStatus,
+    accessToken: token,
+  });
 };
 exports.logout = async (req, res) => {
   try {
