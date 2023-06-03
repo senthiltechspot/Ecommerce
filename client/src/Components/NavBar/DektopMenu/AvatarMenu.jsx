@@ -14,7 +14,7 @@ import CartIcon from "../CartIcon/CartIcon";
 import { Logout } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-const AvatarMenu = ({ username }) => {
+const AvatarMenu = ({ username, userType }) => {
   const navigate = useNavigate();
 
   // User/Avatar Menu Drop Handler
@@ -111,19 +111,14 @@ const AvatarMenu = ({ username }) => {
             </ListItemIcon>
             Logout
           </MenuItem>
-          {/* {decodedToken != null ? (
-        decodedToken.user.isAdmin ? (
-          <MenuItem
-            onClick={() => navigate("/admin-dashboard")}
-          >
-            <Avatar /> Admin DashBoard
-          </MenuItem>
-        ) : (
-          ""
-        )
-      ) : (
-        ""
-      )} */}
+
+          {userType === "ADMIN" ? (
+            <MenuItem onClick={() => navigate("/admin-dashboard")}>
+              <Avatar /> Admin DashBoard
+            </MenuItem>
+          ) : (
+            <></>
+          )}
         </Menu>
       </Box>
     </>

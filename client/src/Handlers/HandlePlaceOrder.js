@@ -18,7 +18,7 @@ const HandlePlaceOrder = (
   zip
 ) => {
   const token = cookies.get("accessToken");
-  const handleDeleteCart = () => {
+  function handleDeleteCart  () {
     const configuration = {
       method: "delete",
       url: `${process.env.REACT_APP_API}ecomm/api/v1/cart/`,
@@ -30,7 +30,7 @@ const HandlePlaceOrder = (
 
     axios(configuration)
       .then((res) => {
-        setUpdate(true);
+        // setUpdate(true);
       })
       .catch((error) => {
         console.log(error);
@@ -58,7 +58,6 @@ const HandlePlaceOrder = (
       },
     },
   };
-  setOpenBackDrop(true);
   axios(configuration)
     .then(async (res) => {
       await handleDeleteCart();

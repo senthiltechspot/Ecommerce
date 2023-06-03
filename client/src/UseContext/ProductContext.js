@@ -32,6 +32,9 @@ const ProductProvider = (props) => {
       .get(`${process.env.REACT_APP_API}ecomm/api/v1/products/`, { headers })
       .then((response) => {
         setProductsData(response.data);
+
+        console.log(response.data);
+
       })
       .catch((error) => {
         console.log(error);
@@ -86,7 +89,6 @@ const ProductProvider = (props) => {
         headers,
       })
       .then((res) => {
-        //   setResponse(res.data);
         fetchProducts();
         setOpenBackDrop(false);
         setMessage("Deleted SucessFully");

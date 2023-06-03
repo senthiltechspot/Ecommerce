@@ -32,7 +32,6 @@ const style = {
 };
 
 const NavBar = () => {
-
   //   Drawer Comp
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("sm"));
@@ -41,6 +40,7 @@ const NavBar = () => {
   // Handle Users
   const token = cookies.get("accessToken");
   const username = cookies.get("username");
+  const userType = cookies.get("userType");
 
   // Logout User
   const handlelogout = () => {
@@ -88,7 +88,7 @@ const NavBar = () => {
                   <Box display="flex">
                     {token ? (
                       // If User Logged in
-                      <AvatarMenu username={username} />
+                      <AvatarMenu username={username} userType={userType} />
                     ) : (
                       // If User Not Logged in
                       <>

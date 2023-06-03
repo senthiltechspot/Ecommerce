@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
@@ -9,20 +9,28 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import "./ProductsCard.css";
-import { minHeight } from "@mui/system";
-const ProductsCard = () => {
-  const url = `${process.env.REACT_APP_API}ecomm/api/v1/products`;
+import { productContext } from "../../../UseContext/ProductContext";
 
-  const [fetchedData, setFetchedData] = useState(null);
+const ProductsCard = () => {
+  // const url = `${process.env.REACT_APP_API}ecomm/api/v1/products`;
+
+  // const [fetchedData, setFetchedData] = useState(null);
 
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     const { data } = await axios.get(url);
+  //     setFetchedData(data);
+  //   };
+  //   getData();
+  // }, []);
+
+  const { ProductData, fetchProducts, CreateProduct, DeleteProduct } =
+    useContext(productContext);
+
   useEffect(() => {
-    const getData = async () => {
-      const { data } = await axios.get(url);
-      setFetchedData(data);
-    };
-    getData();
+    fetchProducts();
   }, []);
 
   return (
@@ -35,8 +43,8 @@ const ProductsCard = () => {
         alignItems="center"
         spacing={{ xs: 2, md: 3 }}
       >
-        {fetchedData ? (
-          fetchedData.reverse().map((items, i) => (
+        {ProductData ? (
+          ProductData.reverse().map((items, i) => (
             <Grid item key={i}>
               <Card sx={{ maxWidth: 200, minHeight: 350 }}>
                 <CardActionArea>
