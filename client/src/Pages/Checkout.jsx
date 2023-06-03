@@ -10,7 +10,7 @@ const Checkout = () => {
 
   return (
     <div>
-      <NavBar />
+      {/* <NavBar /> */}
       <div
         className="d-flex flex-column align-items-center justify-content-center "
         height={"100vh"}

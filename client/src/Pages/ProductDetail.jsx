@@ -8,7 +8,7 @@ const ProductDetail = () => {
   
   return (
     <div>
-      <NavBar isUpdated={isUpdated} setIsUpdated={setIsUpdated} />
+      {/* <NavBar isUpdated={isUpdated} setIsUpdated={setIsUpdated} /> */}
       <ProductDetails isUpdated={isUpdated} setIsUpdated={setIsUpdated} />
     </div>
   );

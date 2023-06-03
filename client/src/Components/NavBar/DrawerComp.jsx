@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Drawer,
   IconButton,
-  ListSubheader,
   List,
   ListItemButton,
   ListItemIcon,
@@ -24,7 +23,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useNavigate } from "react-router-dom";
 
-const DrawerComp = ({ decodedToken, handlelogout, handleOpenModal }) => {
+const DrawerComp = ({ username, handlelogout, handleOpenModal }) => {
   const [open, setOpen] = useState();
 
   const [Listopen, setListOpen] = React.useState(true);
@@ -113,7 +112,7 @@ const DrawerComp = ({ decodedToken, handlelogout, handleOpenModal }) => {
             </ListItemButton>
           </ListItem>
           <Divider />
-          {decodedToken ? (
+          {username ? (
             <>
               <ListItem
                 disablePadding
@@ -126,7 +125,7 @@ const DrawerComp = ({ decodedToken, handlelogout, handleOpenModal }) => {
                   <ListItemIcon>
                     <AccountCircleIcon />
                   </ListItemIcon>
-                  <ListItemText primary={"Accounts"} />
+                  <ListItemText primary={"DashBoard"} />
                 </ListItemButton>
               </ListItem>
               <Divider />

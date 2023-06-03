@@ -5,7 +5,7 @@ import NavBar from "../Components/NavBar/NavBar";
 const Cart = () => {
   return (
     <div>
-      <NavBar />
+      {/* <NavBar /> */}
       <ItemView />
     </div>
   );

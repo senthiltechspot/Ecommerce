@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 const About = () => {
   return (
     <div>
-      <NavBar />
+      {/* <NavBar /> */}
       <h1>About us</h1>
       <div
         className="d-flex flex-column align-items-center justify-content-center "

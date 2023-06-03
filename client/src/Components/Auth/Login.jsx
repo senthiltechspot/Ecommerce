@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Typography,
   FormControl,
@@ -17,90 +17,49 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import Snackbar from "@mui/material/Snackbar";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import HandleLogin from "../../Handlers/HandleLogin";
+import { alertContext } from "../../UseContext/AlertContext";
 const cookies = new Cookies();
 
-const Login = ({ handleflipLogin, handleLoginSucess, handleCloseModal }) => {
+const Login = ({ handleflipLogin, handleCloseModal }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const [logged, setLogged] = useState(0);
-  const [showPassword, setShowPassword] = React.useState(false);
+  // const [logged, setLogged] = useState(0);
 
-  const [openError, setOpenError] = React.useState(false);
-
-  const handleLoginError = () => {
-    setOpenError(true);
-  };
-
-  const handleClosesnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenError(false);
-  };
-
+  // Hide/Show Password
+  const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-
-  const configuration = {
-    method: "post",
-    url: `${process.env.REACT_APP_API}ecomm/api/v1/auth/signin`,
-    data: {
-      username: username,
-      password: password,
-    },
-  };
-
+  const value = useContext(alertContext);
+  const {
+    OpenAlert,
+    setOpenAlert,
+    Message,
+    setMessage,
+    AlertType,
+    setAlertType,
+    openBackDrop,
+    setOpenBackDrop,
+  } = value;
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios(configuration)
-      .then((result) => {
-        if (!result.data.accessToken) {
-          handleLoginError();
-        } else {
-          cookies.set("accessToken", result.data.accessToken, {
-            path: "/",
-          });
-          cookies.set("username", result.data.username, {
-            path: "/",
-          });
-          cookies.set("email", result.data.email, {
-            path: "/",
-          });
-          // window.location.href = "/";
-          handleLoginSucess();
-          handleCloseModal();
-        }
-        console.log(result);
-      })
-      .catch((error) => {
-        // setLogged(1);
-        handleLoginError();
-        console.log(error);
-      });
+    HandleLogin(
+      username,
+      password,
+      handleCloseModal,
+      setOpenAlert,
+      setOpenBackDrop,
+      setMessage,
+      setAlertType
+    );
   };
 
   return (
     <div>
       <div>
-        {/* Alert Notification */}
-        <Snackbar
-          open={openError}
-          autoHideDuration={6000}
-          onClose={handleClosesnackbar}
-        >
-          <Alert
-            onClose={handleClosesnackbar}
-            severity="error"
-            sx={{ width: "100%" }}
-          >
-            Unable to find User/email
-          </Alert>
-        </Snackbar>
-
         {/* Form */}
         <Stack
           direction="row"

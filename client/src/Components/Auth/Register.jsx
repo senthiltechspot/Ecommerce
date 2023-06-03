@@ -14,7 +14,7 @@ import {
   InputAdornment,
 } from "@mui/material";
 
-import Snackbar from "@mui/material/Snackbar";
+// import Snackbar from "@mui/material/Snackbar";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
 
@@ -58,10 +58,10 @@ const Register = ({ handleflipLogin, handleSucess }) => {
     axios(configuration)
       .then((result) => {
         handleflipLogin();
-        handleSucess();
+        // handleSucess();
       })
       .catch((error) => {
-        handleClickError();
+        // handleClickError();
         console.log(error);
       });
   };
@@ -69,7 +69,7 @@ const Register = ({ handleflipLogin, handleSucess }) => {
     <div>
       <div>
         {/* Alert Notification */}
-        <Snackbar
+        {/* <Snackbar
           open={openError}
           autoHideDuration={6000}
           onClose={handleClose}
@@ -77,7 +77,7 @@ const Register = ({ handleflipLogin, handleSucess }) => {
           <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
             Unable to register User/email all ready used
           </Alert>
-        </Snackbar>
+        </Snackbar> */}
 
         {/* Form */}
         <Stack

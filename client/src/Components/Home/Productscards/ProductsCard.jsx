@@ -36,8 +36,8 @@ const ProductsCard = () => {
         spacing={{ xs: 2, md: 3 }}
       >
         {fetchedData ? (
-          fetchedData.reverse().map((items) => (
-            <Grid item>
+          fetchedData.reverse().map((items, i) => (
+            <Grid item key={i}>
               <Card sx={{ maxWidth: 200, minHeight: 350 }}>
                 <CardActionArea>
                   <CardMedia

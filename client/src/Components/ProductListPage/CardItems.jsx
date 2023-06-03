@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
   CardActionArea,
@@ -10,39 +10,22 @@ import {
   Card,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { alertContext } from "../../UseContext/AlertContext";
+import AddToCart from "../../Handlers/AddToCart";
+import { cartContext } from "../../UseContext/CartContext";
 
 const cookies = new Cookies();
 
-const CardItems = ({ isUpdated, setIsUpdated }) => {
-  const [openSnackBar, setOpenSnackBar] = React.useState(false);
-  const [openError, setOpenError] = React.useState(false);
-  const [openLoginError, setOpenLoginError] = React.useState(false);
-
+const CardItems = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-  const handleSucess = () => {
-    setOpenSnackBar(true);
-    setIsUpdated(true);
-  };
+  const { totalCartItems, fetchCartItems } = useContext(cartContext);
 
-  const handleError = () => {
-    setOpenError(true);
-    setIsUpdated(true);
-  };
-  const handleClosesnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenError(false);
-    setOpenSnackBar(false);
-    setIsUpdated(false);
-    setOpenLoginError(false);
-  };
+  const value = useContext(alertContext);
+  const { setOpenAlert, setMessage, setAlertType, setOpenBackDrop } = value;
 
   const url = `${process.env.REACT_APP_API}ecomm/api/v1/products`;
 
@@ -52,50 +35,29 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
     const getData = async () => {
       const { data } = await axios.get(url);
       setFetchedData(data);
-      // console.log("Carditems Fetched",data);
+      console.log("Carditems Fetched", data);
     };
     getData();
   }, []);
 
-  const token = cookies.get("accessToken");
-
-  // Handle Add to Cart Request
-  const AddToCart = async (id) => {
-    if (token) {
-      axios
-        .post(
-          `${process.env.REACT_APP_API}ecomm/api/v1/cart/add`,
-          {
-            productId: id,
-            quantity: 1,
-          },
-          {
-            headers: {
-              Authorization: token,
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        .then((result) => {
-          handleSucess();
-        })
-        .catch((error) => {
-          handleError();
-          console.log(error);
-        });
-    } else {
-      setOpenLoginError(true);
-    }
+  const BuyNow = (id) => {
+    AddToCart(
+      id,
+      setOpenAlert,
+      setOpenBackDrop,
+      setMessage,
+      setAlertType,
+      fetchedData,
+      fetchCartItems
+    )
+      .then(() => {
+        navigate(`/cart`);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  const BuyNow = () => {
-    if (token) {
-      AddToCart(items._id);
-      navigate(`/cart`);
-    } else {
-      setOpenLoginError(true);
-    }
-  };
   return (
     <div>
       <h1 className="Heading">On Sale {params.category}</h1>
@@ -113,6 +75,7 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
                 <Grid item key={items._id}>
                   <Card
                     sx={{
+                      minWidth: 280,
                       maxWidth: 280,
                       margin: "0 auto",
                       padding: "0.1em",
@@ -156,20 +119,48 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
                             20% Off
                           </a>
                         </p>
-                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                          <Button
-                            variant="contained"
-                            onClick={() => AddToCart(items._id)}
-                          >
-                            Add to Cart
-                          </Button>
-                          <Button
-                            variant="contained"
-                            sx={{ bgcolor: "warning.main" }}
-                            onClick={() => BuyNow()}
-                          >
-                            Buy Now
-                          </Button>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 1,
+                            justifyContent: "space-around",
+                          }}
+                        >
+                          {items.Qty > 0 ? (
+                            <>
+                              <Button
+                                variant="contained"
+                                onClick={() =>
+                                  AddToCart(
+                                    items._id,
+                                    setOpenAlert,
+                                    setOpenBackDrop,
+                                    setMessage,
+                                    setAlertType,
+                                    fetchCartItems
+                                  )
+                                }
+                              >
+                                Add to Cart
+                              </Button>
+                              <Button
+                                variant="contained"
+                                sx={{ bgcolor: "warning.main" }}
+                                onClick={() => BuyNow(items._id)}
+                              >
+                                Buy Now
+                              </Button>
+                            </>
+                          ) : (
+                            <Button
+                              variant="contained"
+                              sx={{ bgcolor: "warning.main" }}
+                              disabled
+                            >
+                              Sold Out
+                            </Button>
+                          )}
                         </Box>
                       </CardContent>
                     </CardActionArea>
@@ -178,7 +169,7 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
               ))
           : "No Products Found"}
       </Grid>
-      {/* Alert Notification Bar */}
+      {/* Alert Notification Bar
       <Snackbar
         open={openLoginError}
         autoHideDuration={6000}
@@ -217,7 +208,7 @@ const CardItems = ({ isUpdated, setIsUpdated }) => {
         >
           Sucessfully Added to Cart
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </div>
   );
 };

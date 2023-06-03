@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Cookies from "universal-cookie";
@@ -10,6 +10,9 @@ import Button from "@mui/material/Button";
 import { Box, CardMedia, Grid } from "@mui/material";
 import { AddBoxOutlined } from "@mui/icons-material";
 import { padding } from "@mui/system";
+import { alertContext } from "../../UseContext/AlertContext";
+import AddToCart from "../../Handlers/AddToCart";
+import { cartContext } from "../../UseContext/CartContext";
 
 const cookies = new Cookies();
 
@@ -21,72 +24,35 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
   const url = `${process.env.REACT_APP_API}ecomm/api/v1/products/${params.id}`;
 
   const [fetchedData, setFetchedData] = useState(null);
-  const [openSnackBar, setOpenSnackBar] = React.useState(false);
-  const [openError, setOpenError] = React.useState(false);
-  const [openLoginError, setOpenLoginError] = React.useState(false);
 
-  const handleSucess = () => {
-    setOpenSnackBar(true);
-    setIsUpdated(true);
-  };
+  const { totalCartItems, fetchCartItems } = useContext(cartContext);
 
-  const handleError = () => {
-    setOpenError(true);
-    setIsUpdated(true);
-  };
-  const handleClosesnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenError(false);
-    setOpenSnackBar(false);
-    setIsUpdated(false);
-    setOpenLoginError(false);
-  };
+  const value = useContext(alertContext);
+  const { setOpenAlert, setMessage, setAlertType, setOpenBackDrop } = value;
+
   useEffect(() => {
     const getData = async () => {
       const { data } = await axios.get(url);
       setFetchedData(data);
-      // console.log(data);
     };
     getData();
   }, []);
 
-  // Handle Add to Cart Request
-  const AddToCart = async (id) => {
-    if (token) {
-      axios
-        .post(
-          `${process.env.REACT_APP_API}ecomm/api/v1/cart/add`,
-          {
-            productId: id,
-            quantity: 1,
-          },
-          {
-            headers: {
-              Authorization: token,
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        .then((result) => {
-          handleSucess();
-        })
-        .catch((error) => {
-          handleError();
-          console.log(error);
-        });
-    } else {
-      setOpenLoginError(true);
-    }
-  };
-  const BuyNow = () => {
-    if (token) {
-      AddToCart(items._id);
-      navigate(`/cart`);
-    } else {
-      setOpenLoginError(true);
-    }
+  const BuyNow = (id) => {
+    AddToCart(
+      id,
+      setOpenAlert,
+      setOpenBackDrop,
+      setMessage,
+      setAlertType,
+      fetchCartItems
+    )
+      .then(() => {
+        navigate(`/cart`);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
   return (
     <div>
@@ -136,14 +102,23 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
                 >
                   <Button
                     variant="contained"
-                    onClick={() => AddToCart(fetchedData._id)}
+                    onClick={() =>
+                      AddToCart(
+                        fetchedData._id,
+                        setOpenAlert,
+                        setOpenBackDrop,
+                        setMessage,
+                        setAlertType,
+                        fetchCartItems
+                      )
+                    }
                   >
                     Add to Cart
                   </Button>
                   <Button
                     variant="contained"
                     sx={{ bgcolor: "warning.main" }}
-                    onClick={() => BuyNow()}
+                    onClick={() => BuyNow(fetchedData._id)}
                   >
                     Buy Now
                   </Button>
@@ -187,7 +162,7 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
         </Box>
       )}
       {/* Alert Notification Bar */}
-      <Snackbar
+      {/* <Snackbar
         open={openError}
         autoHideDuration={6000}
         onClose={handleClosesnackbar}
@@ -225,7 +200,7 @@ const ProductDetails = ({ isUpdated, setIsUpdated }) => {
         >
           Sucessfully Added to Cart
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </div>
   );
 };

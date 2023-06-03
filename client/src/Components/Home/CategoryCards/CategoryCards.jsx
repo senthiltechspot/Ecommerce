@@ -15,7 +15,7 @@ const CategoryCards = () => {
         direction="row"
         justifyContent="center"
         alignItems="center"
-        spacing={{ xs: 2, md: 3 }}
+        spacing={{ xs: 1, md: 3 }}
       >
         <Grid
           item
@@ -23,7 +23,7 @@ const CategoryCards = () => {
             navigate(`/Category/Books`);
           }}
         >
-          <Card sx={{ maxWidth: 300 }}>
+          <Card sx={{ maxWidth: { xs: 130, md: 180 }, minWidth: { md: 180 } }}>
             <CardActionArea>
               <CardMedia
                 component="img"
@@ -40,14 +40,13 @@ const CategoryCards = () => {
             navigate(`/Category/Furniture`);
           }}
         >
-          <Card sx={{ maxWidth: 300 }}>
+          <Card sx={{ minWidth: { md: 180 }, maxWidth: { xs: 130, md: 180 } }}>
             <CardActionArea>
               <CardMedia
                 component="img"
                 height="240"
                 image={require("../../../Asserts/Category/Furniture.png")}
-                alt="green iguana
-                "
+                alt="green iguana"
               />
             </CardActionArea>
           </Card>
@@ -58,7 +57,7 @@ const CategoryCards = () => {
             navigate(`/Category/Electronics`);
           }}
         >
-          <Card sx={{ maxWidth: 300 }}>
+          <Card sx={{ minWidth: { md: 180 }, maxWidth: { xs: 130, md: 180 } }}>
             <CardActionArea>
               <CardMedia
                 component="img"
@@ -71,7 +70,7 @@ const CategoryCards = () => {
         </Grid>
 
         <Grid item onClick={() => navigate("/Category/Travel")}>
-          <Card sx={{ maxWidth: 300 }}>
+          <Card sx={{ minWidth: { md: 180 }, maxWidth: { xs: 130, md: 180 } }}>
             <CardActionArea>
               <CardMedia
                 component="img"
@@ -83,7 +82,7 @@ const CategoryCards = () => {
           </Card>
         </Grid>
         <Grid item onClick={() => navigate("/Category/Mobile")}>
-          <Card sx={{ maxWidth: 180 }}>
+          <Card sx={{ minWidth: { md: 180 }, maxWidth: { xs: 130, md: 180 } }}>
             <CardActionArea>
               <CardMedia
                 component="img"

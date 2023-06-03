@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -23,6 +23,9 @@ import { Box, Typography } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
+import { alertContext } from "../../UseContext/AlertContext";
+import DeleteItemFromCart from "../../Handlers/DeleteItemFromCart";
+import HandlePlaceOrder from "../../Handlers/HandlePlaceOrder";
 
 const cookies = new Cookies();
 
@@ -42,30 +45,19 @@ const ItemView = () => {
   const [zip, setZip] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [orderItems, setOrderItems] = useState(null);
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [openError, setOpenError] = useState(false);
   const [isLoading, setisLoading] = useState(false);
-  const [EmptyError, setEmptyError] = useState(false);
 
-  const handleSucess = () => {
-    setOpenSnackBar(true);
-    setUpdate(true);
-  };
-
-  const handleClickError = () => {
-    setOpenError(true);
-    setUpdate(true);
-  };
-
-  const handleClosesnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
-    setUpdate(false);
-    setOpenError(false);
-    setEmptyError(false);
-  };
+  const value = useContext(alertContext);
+  const {
+    OpenAlert,
+    setOpenAlert,
+    Message,
+    setMessage,
+    AlertType,
+    setAlertType,
+    openBackDrop,
+    setOpenBackDrop,
+  } = value;
 
   useEffect(() => {
     const headers = {
@@ -80,34 +72,15 @@ const ItemView = () => {
   }, [update]);
 
   const handleDelete = (id) => {
-    const configuration = {
-      method: "delete",
-      url: `${process.env.REACT_APP_API}ecomm/api/v1/cart/items/${id}`,
-      headers: {
-        Authorization: token,
-        "Content-Type": "application/json",
-      },
-    };
-
-    axios(configuration)
-      .then((res) => {
-        setUpdate(true);
-        handleSucess();
-      })
-      .catch((error) => {
-        console.log(error);
-        handleClickError();
-      });
+    DeleteItemFromCart(
+      id,
+      setOpenAlert,
+      setOpenBackDrop,
+      setMessage,
+      setAlertType,
+      setUpdate
+    );
   };
-  // function AddItems() {
-  //   let AllItems = fetchedData.items.map((item) => ({
-  //     product: item.productId._id,
-  //     quantity: item.quantity,
-  //     price: item.productId.price,
-  //   }));
-  //   setorderitems(AllItems);
-  //   // console.log("fetchedOrderitems", AllItems);
-  // }
 
   useEffect(() => {
     if (fetchedData) {
@@ -119,71 +92,33 @@ const ItemView = () => {
       setOrderItems(AllItems);
     }
   }, [fetchedData, update]);
-  const HandlePlaceOrder = async () => {
-    // await AddItems();
-    if (orderItems) {
-      const configuration = {
-        method: "post",
-        url: `${process.env.REACT_APP_API}ecomm/api/v1/CreateOrder`,
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
 
-        data: {
-          orderItems: orderItems,
-          totalPrice: fetchedData.totalPrice,
-          paymentMethod: paymentMethod,
-          shippingAddress: {
-            address: address,
-            city: city,
-            state: state,
-            country: country,
-            zip: zip,
-          },
-        },
-      };
-      setisLoading(true);
-      axios(configuration)
-        .then(async (res) => {
-          handleSucess();
-          await handleDeleteCart();
-          setUpdate(true);
-          setisLoading(false);
-          navigate("/checkout");
-        })
-        .catch((error) => {
-          setisLoading(false);
-          console.log(error);
-          handleClickError();
-        });
+  const PlaceOrder = async () => {
+    if (orderItems) {
+      HandlePlaceOrder(
+        setOpenAlert,
+        setOpenBackDrop,
+        setMessage,
+        setAlertType,
+        orderItems,
+        fetchedData,
+        paymentMethod,
+        address,
+        city,
+        state,
+        country,
+        zip
+      ).then(() => {
+        navigate("/checkout");
+      });
     } else {
       console.log("Empty Cart");
-      setEmptyError(true);
+      setAlertType("error");
+      setMessage("Cart is Empty!");
+      setOpenAlert(true);
     }
   };
 
-  // /ecomm/api/v1/cart
-  const handleDeleteCart = () => {
-    const configuration = {
-      method: "delete",
-      url: `${process.env.REACT_APP_API}ecomm/api/v1/cart/`,
-      headers: {
-        Authorization: token,
-        "Content-Type": "application/json",
-      },
-    };
-
-    axios(configuration)
-      .then((res) => {
-        setUpdate(true);
-        handleSucess();
-      })
-      .catch((error) => {
-        console.log(error);
-        handleClickError();
-      });
-  };
   return (
     <div>
       {isLoading ? (
@@ -347,53 +282,13 @@ const ItemView = () => {
             <button
               type="button"
               className="btn btn-warning float-end"
-              onClick={() => HandlePlaceOrder()}
+              onClick={() => PlaceOrder()}
             >
               Place Order
             </button>
           </div>
         </div>
       </div>
-      {/* Alert Notification Bar */}
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={6000}
-        onClose={handleClosesnackbar}
-      >
-        <Alert
-          onClose={handleClosesnackbar}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
-          Completed Sucessfully
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={openError}
-        autoHideDuration={6000}
-        onClose={handleClosesnackbar}
-      >
-        <Alert
-          onClose={handleClosesnackbar}
-          severity="warning"
-          sx={{ width: "100%" }}
-        >
-          Something Went Wrong Try Again
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={EmptyError}
-        autoHideDuration={6000}
-        onClose={handleClosesnackbar}
-      >
-        <Alert
-          onClose={handleClosesnackbar}
-          severity="warning"
-          sx={{ width: "100%" }}
-        >
-          Empty Cart !
-        </Alert>
-      </Snackbar>
     </div>
   );
 };

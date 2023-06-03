@@ -31,6 +31,7 @@ const Accounts = () => {
     if (token) {
       const decoded = jwt_decode(token);
       setDecodedToken(decoded);
+      console.log(decoded);
     }
   }, [token]);
   return (
@@ -45,7 +46,7 @@ const Accounts = () => {
                 </TableCell>
                 <TableCell sx={tableborder} align="centre">
                   {decodedToken != null
-                    ? decodedToken.user.username
+                    ? decodedToken.username
                     : "Your UserName"}
                 </TableCell>
               </TableRow>
@@ -56,7 +57,7 @@ const Accounts = () => {
                   Name :
                 </TableCell>
                 <TableCell sx={tableborder} align="centre">
-                  {decodedToken != null ? decodedToken.user.name : "Your Name"}
+                  {decodedToken != null ? decodedToken.name : "Your Name"}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -64,7 +65,7 @@ const Accounts = () => {
                   Email :
                 </TableCell>
                 <TableCell sx={tableborder} align="centre">
-                  {decodedToken != null ? decodedToken.user.email : "Your Name"}
+                  {decodedToken != null ? decodedToken.email : "Your Email"}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -72,7 +73,7 @@ const Accounts = () => {
                   User id :
                 </TableCell>
                 <TableCell sx={tableborder} align="centre">
-                  {decodedToken != null ? decodedToken.user._id : "Your Name"}
+                  {decodedToken != null ? decodedToken.id : "Your Id"}
                 </TableCell>
               </TableRow>
             </TableBody>
