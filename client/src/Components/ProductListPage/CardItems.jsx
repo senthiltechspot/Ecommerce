@@ -29,13 +29,19 @@ const CardItems = () => {
 
   const url = `${process.env.REACT_APP_API}ecomm/api/v1/products`;
 
-  const [fetchedData, setFetchedData] = useState(null);
+  const [fetchedData, setFetchedData] = useState([]);
 
   useEffect(() => {
     const getData = async () => {
       const { data } = await axios.get(url);
-      setFetchedData(data);
-      console.log("Carditems Fetched", data);
+      if (params.category) {
+        let FilteredData = data.filter(
+          (products) => products.category == params.category
+        );
+        setFetchedData(FilteredData);
+      } else {
+        setFetchedData(data);
+      }
     };
     getData();
   }, []);
@@ -47,7 +53,6 @@ const CardItems = () => {
       setOpenBackDrop,
       setMessage,
       setAlertType,
-      fetchedData,
       fetchCartItems
     )
       .then(() => {
@@ -68,105 +73,102 @@ const CardItems = () => {
         alignItems="center"
         spacing={{ xs: 2, md: 3 }}
       >
-        {fetchedData
-          ? fetchedData
-              .filter((products) => products.category == params.category)
-              .map((items) => (
-                <Grid item key={items._id}>
-                  <Card
-                    sx={{
-                      minWidth: 280,
-                      maxWidth: 280,
-                      margin: "0 auto",
-                      padding: "0.1em",
-                      minHeight: 450,
-                    }}
-                  >
-                    <CardActionArea>
-                      <CardMedia
-                        className={"Media"}
-                        component="img"
-                        height="240"
-                        width={"100"}
-                        image={items.imageUrl}
-                        alt="No image Found"
-                        sx={{ padding: "1em 1em 0 1em", objectFit: "contain" }}
-                        onClick={() => navigate(`/products/${items._id}`)}
-                      />
-                      <CardContent>
-                        <Typography
-                          gutterBottom
-                          variant="h5"
-                          component="div"
-                          sx={{
-                            lineHeight: "1.5em",
-                            height: "3em",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            width: "100%",
-                          }}
-                        >
-                          {items.name}
-                        </Typography>
-                        {/* <Button variant="contained">View</Button> */}
-                        <p className="card-text d-flex gap-2 justify-content-center">
-                          ₹{items.price}{" "}
-                          <a className="text-decoration-line-through">
-                            ₹
-                            {Math.floor((items.price / 100) * 20) + items.price}{" "}
-                          </a>
-                          <a className="text-success text-decoration-none">
-                            20% Off
-                          </a>
-                        </p>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: 1,
-                            justifyContent: "space-around",
-                          }}
-                        >
-                          {items.Qty > 0 ? (
-                            <>
-                              <Button
-                                variant="contained"
-                                onClick={() =>
-                                  AddToCart(
-                                    items._id,
-                                    setOpenAlert,
-                                    setOpenBackDrop,
-                                    setMessage,
-                                    setAlertType,
-                                    fetchCartItems
-                                  )
-                                }
-                              >
-                                Add to Cart
-                              </Button>
-                              <Button
-                                variant="contained"
-                                sx={{ bgcolor: "warning.main" }}
-                                onClick={() => BuyNow(items._id)}
-                              >
-                                Buy Now
-                              </Button>
-                            </>
-                          ) : (
+        {fetchedData.length > 0
+          ? fetchedData.map((items) => (
+              <Grid item key={items._id}>
+                <Card
+                  sx={{
+                    minWidth: 280,
+                    maxWidth: 280,
+                    margin: "0 auto",
+                    padding: "0.1em",
+                    minHeight: 450,
+                  }}
+                >
+                  <CardActionArea>
+                    <CardMedia
+                      className={"Media"}
+                      component="img"
+                      height="240"
+                      width={"100"}
+                      image={items.imageUrl}
+                      alt="No image Found"
+                      sx={{ padding: "1em 1em 0 1em", objectFit: "contain" }}
+                      onClick={() => navigate(`/products/${items._id}`)}
+                    />
+                    <CardContent>
+                      <Typography
+                        gutterBottom
+                        variant="h5"
+                        component="div"
+                        sx={{
+                          lineHeight: "1.5em",
+                          height: "3em",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          width: "100%",
+                        }}
+                      >
+                        {items.name}
+                      </Typography>
+                      {/* <Button variant="contained">View</Button> */}
+                      <p className="card-text d-flex gap-2 justify-content-center">
+                        ₹{items.price}{" "}
+                        <a className="text-decoration-line-through">
+                          ₹{Math.floor((items.price / 100) * 20) + items.price}{" "}
+                        </a>
+                        <a className="text-success text-decoration-none">
+                          20% Off
+                        </a>
+                      </p>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: 1,
+                          justifyContent: "space-around",
+                        }}
+                      >
+                        {items.Qty > 0 ? (
+                          <>
+                            <Button
+                              variant="contained"
+                              onClick={() =>
+                                AddToCart(
+                                  items._id,
+                                  setOpenAlert,
+                                  setOpenBackDrop,
+                                  setMessage,
+                                  setAlertType,
+                                  fetchCartItems
+                                )
+                              }
+                            >
+                              Add to Cart
+                            </Button>
                             <Button
                               variant="contained"
                               sx={{ bgcolor: "warning.main" }}
-                              disabled
+                              onClick={() => BuyNow(items._id)}
                             >
-                              Sold Out
+                              Buy Now
                             </Button>
-                          )}
-                        </Box>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                </Grid>
-              ))
+                          </>
+                        ) : (
+                          <Button
+                            variant="contained"
+                            sx={{ bgcolor: "warning.main" }}
+                            disabled
+                          >
+                            Sold Out
+                          </Button>
+                        )}
+                      </Box>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            ))
           : "No Products Found"}
       </Grid>
       {/* Alert Notification Bar
