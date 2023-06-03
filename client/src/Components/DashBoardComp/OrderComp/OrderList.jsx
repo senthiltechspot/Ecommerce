@@ -128,8 +128,7 @@ export default function OrderList({
   const [response, setResponse] = React.useState(null);
 
   const UpdateOrderStatus = (id, status) => {
-    const orderurl =
-      "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/MyOrders/";
+    const orderurl = `${process.env.REACT_APP_API}ecomm/api/v1/MyOrders/`;
 
     const configuration = {
       method: "put",
@@ -155,7 +154,7 @@ export default function OrderList({
 
   const UpdatePaymentStatus = (id, status) => {
     const Paymenturl =
-      "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/MyOrders/";
+    `${process.env.REACT_APP_API}ecomm/api/v1/MyOrders/`;
 
     const configuration = {
       method: "put",
@@ -186,7 +185,7 @@ export default function OrderList({
     };
     axios
       .get(
-        `https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/MyOrders/${orderid}`,
+        `${process.env.REACT_APP_API}ecomm/api/v1/MyOrders/${orderid}`,
         { headers }
       )
       .then((response) => {

@@ -64,7 +64,11 @@ const HandlePlaceOrder = (
       await handleDeleteCart();
       setOpenBackDrop(false);
       setAlertType("success");
-      setMessage("Order Placed Sucessfully");
+      setMessage(
+        res.response.data.message
+          ? res.response.data.message
+          : "Order Placed Sucessfully"
+      );
       setOpenAlert(true);
       navigate("/checkout");
     })

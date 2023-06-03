@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import NavBar from "../Components/NavBar/NavBar";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
@@ -8,6 +8,7 @@ import Box from "@mui/material/Box";
 import AdminCategory from "../Components/DashBoardComp/AdminCategory";
 import AdminProduct from "../Components/DashBoardComp/AdminProduct";
 import AdminOrder from "../Components/DashBoardComp/AdminOrder";
+import { alertContext } from "../UseContext/AlertContext";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -47,6 +48,16 @@ const AdminDashboard = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  const {
+    OpenAlert,
+    setOpenAlert,
+    Message,
+    setMessage,
+    AlertType,
+    setAlertType,
+    openBackDrop,
+    setOpenBackDrop,
+  } = useContext(alertContext);
 
   return (
     <div>
@@ -64,7 +75,12 @@ const AdminDashboard = () => {
           </Tabs>
         </Box>
         <TabPanel value={value} index={0}>
-          <AdminCategory />
+          <AdminCategory
+            setOpenAlert={setOpenAlert}
+            setMessage={setMessage}
+            setAlertType={setAlertType}
+            setOpenBackDrop={setOpenBackDrop}
+          />
         </TabPanel>
         <TabPanel value={value} index={1}>
           <AdminProduct />

@@ -18,6 +18,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { Snackbar, Alert, Divider } from "@mui/material";
+import { categoryContext } from "../../../UseContext/CategoryContext";
 const cookies = new Cookies();
 const token = cookies.get("accessToken");
 
@@ -26,72 +27,82 @@ const Demo = styled("div")(({ theme }) => ({
 }));
 
 export default function InteractiveList({
-  Url,
   from,
   searchProductname,
-  isupdate,
-  setisupdate,
+  data,
+  deleteiItem,
 }) {
-  const [dense, setDense] = React.useState(false);
-  const [secondary, setSecondary] = React.useState(false);
-  const [data, setData] = React.useState([]);
-  const [openSnackBar, setOpenSnackBar] = React.useState(false);
-  const [openError, setOpenError] = React.useState(false);
+  // const [dense, setDense] = React.useState(false);
+  // const [secondary, setSecondary] = React.useState(false);
+  // const [openSnackBar, setOpenSnackBar] = React.useState(false);
+  // const [openError, setOpenError] = React.useState(false);
 
-  const handleClickError = () => {
-    setOpenError(true);
-  };
-  const token = cookies.get("accessToken");
+  // const handleClickError = () => {
+  //   setOpenError(true);
+  // };
 
-  const handleSucess = () => {
-    setOpenSnackBar(true);
-    setisupdate(true);
-  };
+  // const handleSucess = () => {
+  //   setOpenSnackBar(true);
+  //   setisupdate(true);
+  // };
 
-  const handleClosesnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenError(false);
-    setOpenSnackBar(false);
-    setisupdate(false);
-  };
+  // const handleClosesnackbar = (event, reason) => {
+  //   if (reason === "clickaway") {
+  //     return;
+  //   }
+  //   setOpenError(false);
+  //   setOpenSnackBar(false);
+  //   setisupdate(false);
+  // };
+  // const [data, setData] = React.useState([]);
 
-  React.useEffect(() => {
-    const headers = {
-      Authorization: token,
-      "Content-Type": "application/json",
-    };
-    axios
-      .get(Url, { headers })
-      .then((response) => {
-        setData(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [isupdate]);
+  // const token = cookies.get("accessToken");
+
+  // React.useEffect(() => {
+  //   const headers = {
+  //     Authorization: token,
+  //     "Content-Type": "application/json",
+  //   };
+  //   axios
+  //     .get(Url, { headers })
+  //     .then((response) => {
+  //       setData(response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // }, [isupdate]);
+  // const { Categorydata, fetchCategory } = React.useContext(categoryContext);
 
   // Handle Delete Request
-  const [response, setResponse] = React.useState(null);
+  // const [response, setResponse] = React.useState(null);
 
-  const handleDelete = (id) => {
-    const headers = {
-      Authorization: token,
-      "Content-Type": "application/json",
-    };
+  // const handleDelete = (id) => {
+  //   const headers = {
+  //     Authorization: token,
+  //     "Content-Type": "application/json",
+  //   };
+  //   setOpenBackDrop(true);
 
-    axios
-      .delete(`${Url}${id}`, { headers })
-      .then((res) => {
-        setResponse(res.data);
-        handleSucess();
-      })
-      .catch((error) => {
-        console.log(error);
-        handleClickError();
-      });
-  };
+  //   axios
+  //     .delete(`${Url}${id}`, { headers })
+  //     .then((res) => {
+  //       setResponse(res.data);
+  //       fetchdata();
+  //       setOpenBackDrop(false);
+  //       setMessage("Deleted SucessFully");
+  //       setAlertType("success");
+  //       setOpenAlert(true);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       setOpenBackDrop(false);
+  //       setMessage("Unable to Delete, kindly Try Again !");
+  //       setAlertType("error");
+  //       setOpenAlert(true);
+  //       // handleClickError();
+  //     });
+  // };
 
   return (
     <Box sx={{ flexGrow: 1, maxWidth: 752 }}>
@@ -109,51 +120,45 @@ export default function InteractiveList({
                     .includes(searchProductname.toLowerCase())
                 )
                 .map((items) => (
-                  <List dense={dense} key={items._id}>
+                  <List key={items._id}>
                     <ListItem
                       secondaryAction={
                         <IconButton
                           edge="end"
                           aria-label="delete"
-                          onClick={() => handleDelete(items._id)}
+                          onClick={() => deleteiitem(items._id)}
                         >
                           <DeleteIcon />
                         </IconButton>
                       }
                     >
-                      <ListItemText
-                        primary={items.name}
-                        secondary={secondary ? "Secondary text" : null}
-                      />
+                      <ListItemText primary={items.name} />
                     </ListItem>
                     <Divider />
                   </List>
                 ))
             ) : (
               data.map((items) => (
-                <List dense={dense} key={items._id}>
+                <List key={items._id}>
                   <ListItem
                     secondaryAction={
                       <IconButton
                         edge="end"
                         aria-label="delete"
-                        onClick={() => handleDelete(items._id)}
+                        onClick={() => deleteiItem(items._id)}
                       >
                         <DeleteIcon />
                       </IconButton>
                     }
                   >
-                    <ListItemText
-                      primary={items.name}
-                      secondary={secondary ? "Secondary text" : null}
-                    />
+                    <ListItemText primary={items.name} />
                   </ListItem>
                   <Divider />
                 </List>
               ))
             )
           ) : (
-            <List dense={dense}>
+            <List>
               <ListItem
                 secondaryAction={
                   <IconButton edge="end" aria-label="delete">
@@ -171,7 +176,7 @@ export default function InteractiveList({
         </Demo>
       </Grid>
 
-      <Snackbar
+      {/* <Snackbar
         open={openSnackBar}
         autoHideDuration={6000}
         onClose={handleClosesnackbar}
@@ -196,7 +201,7 @@ export default function InteractiveList({
         >
           Unable to Delete
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </Box>
   );
 }

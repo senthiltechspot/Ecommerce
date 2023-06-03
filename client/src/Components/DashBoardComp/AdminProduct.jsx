@@ -1,16 +1,22 @@
-import { Button, TextField, Typography } from "@mui/material";
-import React from "react";
-import Createdata from "./SmallComp/Createdata";
+import { TextField, Typography } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
 import InteractiveList from "./SmallComp/InteractiveList";
+import { productContext } from "../../UseContext/ProductContext";
+import Createdata from "./SmallComp/Createdata";
 
 const AdminProduct = () => {
-  const [searchProductname, setSearchProductname] = React.useState(null);
-  const [isupdate, setisupdate] = React.useState(false);
+  const [searchProductname, setSearchProductname] = useState(null);
+  // const [isupdate, setisupdate] = React.useState(false);
 
-  const Producturl =
-    "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/products/";
-  const categoryurl =
-    "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/category/";
+  // const Producturl = `${process.env.REACT_APP_API}ecomm/api/v1/products/`;
+  const categoryurl = `${process.env.REACT_APP_API}ecomm/api/v1/category/`;
+
+  const { ProductData, fetchProducts, CreateProduct, DeleteProduct } =
+    useContext(productContext);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
   return (
     <div>
       <div className="d-flex justify-content-evenly gap-3">
@@ -28,19 +34,18 @@ const AdminProduct = () => {
       <div className="d-flex justify-content-around gap-3 ">
         <div className="p-2 flex-grow-1">
           <InteractiveList
-            Url={Producturl}
             from={"Products"}
             searchProductname={searchProductname}
-            isupdate={isupdate}
-            setisupdate={setisupdate}
-
+            data={ProductData}
+            deleteiItem={DeleteProduct}
           />
         </div>
         <div className="p-2 flex-grow-1">
           <Createdata
-            url={Producturl}
+            // url={Producturl}
             categoryurl={categoryurl}
-            setisupdate={setisupdate}
+            // setisupdate={setisupdate}
+            CreateProduct={CreateProduct}
           />
         </div>
       </div>

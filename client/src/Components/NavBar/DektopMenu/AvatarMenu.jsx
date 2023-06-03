@@ -12,8 +12,11 @@ import {
 } from "@mui/material";
 import CartIcon from "../CartIcon/CartIcon";
 import { Logout } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 const AvatarMenu = ({ username }) => {
+  const navigate = useNavigate();
+
   // User/Avatar Menu Drop Handler
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -27,11 +30,11 @@ const AvatarMenu = ({ username }) => {
   };
 
   return (
-    <div>
+    <>
       <Box sx={{ marginLeft: "auto" }}>
         <CartIcon />
         {/* Avatar with drop menu */}
-        <Tooltip title="Account settings" sx={{ marginLeft: 1 }}>
+        <Tooltip title="Account settings" sx={{ marginLeft: "auto" }}>
           <IconButton
             onClick={handleClick}
             size="small"
@@ -123,7 +126,7 @@ const AvatarMenu = ({ username }) => {
       )} */}
         </Menu>
       </Box>
-    </div>
+    </>
   );
 };
 

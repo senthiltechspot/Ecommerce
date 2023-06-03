@@ -8,8 +8,7 @@ const AdminOrder = () => {
   const [searchProductname, setSearchProductname] = React.useState(null);
   const [searchOrderUser, setSearchOrderUser] = React.useState(null);
 
-  const orderurl =
-    "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/orders";
+  const orderurl = `${process.env.REACT_APP_API}ecomm/api/v1/orders`;
 
   return (
     <div>

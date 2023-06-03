@@ -5,33 +5,20 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { Button, TextField, Snackbar, Alert, Typography } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 
 const cookies = new Cookies();
-const token = cookies.get("accessToken");
 
-const Createdata = ({ url, categoryurl, setisupdate }) => {
+const Createdata = ({ categoryurl, CreateProduct }) => {
   const [name, setname] = useState(null);
   const [description, setDescription] = useState(null);
   const [price, setPrice] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [Category, setCategory] = useState(null);
   const [data, setData] = React.useState([]);
-  const [openSnackBar, setOpenSnackBar] = React.useState(false);
+  const [Qty, setQty] = useState(1);
 
-  const handleSucess = () => {
-    setOpenSnackBar(true);
-    setisupdate(true);
-  };
-
-  const handleClosesnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
-    setisupdate(false);
-  };
-  React.useEffect(() => {
+  useEffect(() => {
     axios
       .get(categoryurl)
       .then((response) => {
@@ -43,38 +30,17 @@ const Createdata = ({ url, categoryurl, setisupdate }) => {
       });
   }, []);
 
-  const token = cookies.get("accessToken");
-  // Handle Create Request
-  const configuration = {
-    method: "post",
-    url: url,
-    headers: {
-      Authorization: token,
-      "Content-Type": "application/json",
-    },
-    data: {
-      name: name,
-      description,
-      price,
-      category: Category,
-      imageUrl,
-    },
-  };
-
   const handleCreate = (e) => {
-    // e.preventDefault();
-    axios(configuration)
-      .then((result) => {
-        // handleClick();
-        // handleSucess();
-        // handleflipLogin();
-
-        handleSucess();
-      })
-      .catch((error) => {
-        // handleClickError();
-        console.log(error);
-      });
+    e.preventDefault();
+    const data = {
+      name: name,
+      description: description,
+      price: price,
+      category: Category,
+      imageUrl: imageUrl,
+      Qty: Qty,
+    };
+    CreateProduct(data);
   };
   return (
     <div>
@@ -88,6 +54,7 @@ const Createdata = ({ url, categoryurl, setisupdate }) => {
           id="fullWidth"
           onChange={(e) => setname(e.target.value)}
           inputProps={{ maxLength: 45 }}
+          required
         />
         <TextField
           fullWidth
@@ -96,6 +63,7 @@ const Createdata = ({ url, categoryurl, setisupdate }) => {
           multiline
           maxRows={20}
           onChange={(e) => setDescription(e.target.value)}
+          required
         />
         <TextField
           fullWidth
@@ -103,12 +71,22 @@ const Createdata = ({ url, categoryurl, setisupdate }) => {
           id="fullWidth"
           type={"number"}
           onChange={(e) => setPrice(e.target.value)}
+          required
+        />
+        <TextField
+          fullWidth
+          label="Quantity"
+          id="fullWidth"
+          type={"number"}
+          onChange={(e) => setQty(e.target.value)}
+          required
         />
         <TextField
           fullWidth
           label="Image Url"
           id="fullWidth"
           onChange={(e) => setImageUrl(e.target.value)}
+          required
         />
         <FormControl fullWidth>
           <InputLabel id="demo-simple-select-label">Category</InputLabel>
@@ -118,6 +96,7 @@ const Createdata = ({ url, categoryurl, setisupdate }) => {
             value={Category}
             label="Category"
             onChange={(e) => setCategory(e.target.value)}
+            required
           >
             {data ? (
               data.map((items) => (
@@ -133,20 +112,6 @@ const Createdata = ({ url, categoryurl, setisupdate }) => {
         <Button variant="outlined" onClick={() => handleCreate()}>
           Create
         </Button>
-
-        <Snackbar
-          open={openSnackBar}
-          autoHideDuration={6000}
-          onClose={handleClosesnackbar}
-        >
-          <Alert
-            onClose={handleClosesnackbar}
-            severity="success"
-            sx={{ width: "100%" }}
-          >
-            Product Sucessfully Created
-          </Alert>
-        </Snackbar>
       </form>
     </div>
   );

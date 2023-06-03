@@ -2,19 +2,14 @@ import React, { useState } from "react";
 import {
   AppBar,
   Grid,
-  Tabs,
-  Tab,
   Toolbar,
   Typography,
   Box,
   Button,
   useTheme,
   useMediaQuery,
-  Menu,
-  MenuItem,
 } from "@mui/material";
 import DrawerComp from "./DrawerComp";
-import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import AuthModal from "./AuthModal/AuthModal";
 import CartIcon from "./CartIcon/CartIcon";
@@ -36,13 +31,11 @@ const style = {
   p: 4,
 };
 
-const NavBar = ({ isUpdated }) => {
-  const navigate = useNavigate();
+const NavBar = () => {
 
   //   Drawer Comp
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("sm"));
-  const [value, setValue] = useState(0);
 
   // Using Cookies
   // Handle Users

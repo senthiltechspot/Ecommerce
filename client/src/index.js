@@ -1,15 +1,13 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
-import AlertDetailsProvider from "./UseContext/AlertContext";
-import CartProvider from "./UseContext/CartContext";
+import IndexProvider from "./UseContext/IndexProvider";
 
-ReactDOM.render(
-  <AlertDetailsProvider>
-    <CartProvider>
-      <App />
-    </CartProvider>
-  </AlertDetailsProvider>,
-  document.getElementById("root")
+const rootElement = document.getElementById("root");
+
+ReactDOM.createRoot(rootElement).render(
+  <IndexProvider>
+    <App />
+  </IndexProvider>
 );

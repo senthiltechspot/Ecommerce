@@ -1,44 +1,21 @@
 import { Button, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import InteractiveList from "./SmallComp/InteractiveList";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { categoryContext } from "../../UseContext/CategoryContext";
 const cookies = new Cookies();
 const token = cookies.get("accessToken");
 
-const AdminCategory = () => {
+const AdminCategory = (props) => {
+  const { Categorydata, fetchCategory, CreateCategory, DeleteCategory } =
+    useContext(categoryContext);
+
   const [name, setname] = useState(null);
-  const token = cookies.get("accessToken");
 
-  const categoryurl =
-    "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/category/";
+  // const token = cookies.get("accessToken");
 
-  const DeleteCategoryurl =
-    "https://senthiltechspot-ecommerce-api.onrender.com/ecomm/api/v1/category/";
-
-  // Handle Create Request
-  useEffect(() => {});
-  const configuration = {
-    method: "post",
-    url: categoryurl,
-    headers: {
-      Authorization: token,
-      "Content-Type": "application/json",
-    },
-    data: {
-      name: name,
-    },
-  };
-  const handleCreate = (e) => {
-    axios(configuration)
-      .then((result) => {
-        // handleSucess();
-      })
-      .catch((error) => {
-        // handleClickError();
-        console.log(error);
-      });
-  };
+  const categoryurl = `${process.env.REACT_APP_API}ecomm/api/v1/category/`;
 
   return (
     <div>
@@ -50,12 +27,16 @@ const AdminCategory = () => {
           id="fullWidth"
           onChange={(e) => setname(e.target.value)}
         />
-        <Button variant="outlined" onClick={() => handleCreate()}>
+        <Button variant="outlined" onClick={() => CreateCategory(name)}>
           Create
         </Button>
       </div>
       <div className="d-flex justify-content-evenly">
-        <InteractiveList Url={categoryurl} from={"Category"} />
+        <InteractiveList
+          from={"Category"}
+          data={Categorydata}
+          deleteiItem={DeleteCategory}
+        />
       </div>
     </div>
   );
