@@ -31,7 +31,6 @@ const Createdata = ({ categoryurl, CreateProduct }) => {
   }, []);
 
   const handleCreate = (e) => {
-    e.preventDefault();
     const data = {
       name: name,
       description: description,
