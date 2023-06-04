@@ -15,10 +15,11 @@ const HandlePlaceOrder = (
   city,
   state,
   country,
-  zip
+  zip,
+  navigate
 ) => {
   const token = cookies.get("accessToken");
-  function handleDeleteCart  () {
+  function handleDeleteCart() {
     const configuration = {
       method: "delete",
       url: `${process.env.REACT_APP_API}ecomm/api/v1/cart/`,
@@ -35,7 +36,7 @@ const HandlePlaceOrder = (
       .catch((error) => {
         console.log(error);
       });
-  };
+  }
 
   const configuration = {
     method: "post",
@@ -63,22 +64,14 @@ const HandlePlaceOrder = (
       await handleDeleteCart();
       setOpenBackDrop(false);
       setAlertType("success");
-      setMessage(
-        res.response.data.message
-          ? res.response.data.message
-          : "Order Placed Sucessfully"
-      );
+      setMessage("Order Placed Sucessfully");
       setOpenAlert(true);
       navigate("/checkout");
     })
     .catch((error) => {
       setOpenBackDrop(false);
       setAlertType("error");
-      setMessage(
-        error.response.data.message
-          ? error.response.data.message
-          : "Something Went Wrong Try Again"
-      );
+      setMessage("Something Went Wrong Try Again");
       setOpenAlert(true);
       console.log(error);
     });

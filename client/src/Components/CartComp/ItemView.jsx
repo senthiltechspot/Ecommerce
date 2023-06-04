@@ -107,10 +107,9 @@ const ItemView = () => {
         city,
         state,
         country,
-        zip
-      ).then(() => {
-        navigate("/checkout");
-      });
+        zip,
+        navigate
+      );
     } else {
       console.log("Empty Cart");
       setAlertType("error");
