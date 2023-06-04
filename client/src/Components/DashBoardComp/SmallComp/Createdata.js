@@ -15,7 +15,7 @@ const Createdata = ({ categoryurl, CreateProduct }) => {
   const [price, setPrice] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [Category, setCategory] = useState(null);
-  const [data, setData] = React.useState([]);
+  const [data, setData] = useState([]);
   const [Qty, setQty] = useState(1);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const Createdata = ({ categoryurl, CreateProduct }) => {
       });
   }, []);
 
-  const handleCreate = (e) => {
+  const handleCreate = async (e) => {
     const data = {
       name: name,
       description: description,
@@ -39,7 +39,13 @@ const Createdata = ({ categoryurl, CreateProduct }) => {
       imageUrl: imageUrl,
       Qty: Qty,
     };
-    CreateProduct(data);
+    await CreateProduct(data);
+    setname(" ");
+    setDescription(" ");
+    setPrice(0);
+    setImageUrl(" ");
+    setCategory(null);
+    setQty(1);
   };
   return (
     <div>
@@ -51,6 +57,7 @@ const Createdata = ({ categoryurl, CreateProduct }) => {
           fullWidth
           label="Name"
           id="fullWidth"
+          value={name}
           onChange={(e) => setname(e.target.value)}
           inputProps={{ maxLength: 45 }}
           required
@@ -61,6 +68,7 @@ const Createdata = ({ categoryurl, CreateProduct }) => {
           id="fullWidth"
           multiline
           maxRows={20}
+          value={description}
           onChange={(e) => setDescription(e.target.value)}
           required
         />
@@ -69,6 +77,7 @@ const Createdata = ({ categoryurl, CreateProduct }) => {
           label="Price"
           id="fullWidth"
           type={"number"}
+          value={price}
           onChange={(e) => setPrice(e.target.value)}
           required
         />
@@ -77,6 +86,7 @@ const Createdata = ({ categoryurl, CreateProduct }) => {
           label="Quantity"
           id="fullWidth"
           type={"number"}
+          value={Qty}
           onChange={(e) => setQty(e.target.value)}
           required
         />
@@ -84,6 +94,7 @@ const Createdata = ({ categoryurl, CreateProduct }) => {
           fullWidth
           label="Image Url"
           id="fullWidth"
+          value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
           required
         />
