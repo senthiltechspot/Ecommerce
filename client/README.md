@@ -1,6 +1,6 @@
  <h6>
             © Designed and Developed by
-   <a href="https://github.com/Senthilspot"> Senthilspot</a>
+   <a href="https://github.com/Senthiltechspot"> SenthilTechSpot</a>
 </h6>
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
