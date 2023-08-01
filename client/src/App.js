@@ -48,8 +48,8 @@ const App = () => {
       </BrowserRouter>
       <footer className="d-flex justify-content-center">
           <h6>
-            © Designed and Developed by{" "}
-            <a href="https://github.com/Senthilspot"> Senthilspot</a>
+            © Designed and Developed by
+            <a href="https://github.com/SenthilTechSpot"> SenthilTechSpot</a>
           </h6>
       </footer>
     </div>
