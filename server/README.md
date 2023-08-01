@@ -1,5 +1,8 @@
 # Ecommerce Backend API Routes
-
+ <h6>
+            © Designed and Developed by
+            <a href="https://github.com/Senthilspot"> Senthilspot</a>
+</h6>
 # Auth Routes
 
     //Sign-Up
