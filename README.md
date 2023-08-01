@@ -13,6 +13,6 @@ Complete Ecommerce App Development using MongoDb, Express JS, Node JS and React 
 </p>
 
 <h6>
-            © Designed and Developed by{" "}
+            © Designed and Developed by
             <a href="https://github.com/Senthilspot"> Senthilspot</a>
           </h6>
